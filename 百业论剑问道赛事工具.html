@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>星PVP · 论剑问道 v3.0</title>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pri:#b8860b;--pri2:#c9a050;--prid:rgba(184,134,11,.12);
+  --t1:#9a7208;--t2:#c0442c;--t3:#2d7a4e;
+  --bg:#f0ebe0;--bg2:#e8e0d0;--card:#fffdf7;--card2:#faf5ec;
+  --text:#3d3226;--text2:#8a7a65;--border:rgba(0,0,0,.07);
+  --shadow:0 2px 16px rgba(0,0,0,.07);
+  --font:"PingFang SC","Microsoft YaHei",-apple-system,sans-serif;
+  --font2:"Noto Serif SC","STSong","SimSun",serif;
+  --gold-glow:0 0 16px rgba(184,134,11,.2),0 0 40px rgba(184,134,11,.06);
+  --card-hover:0 6px 20px rgba(0,0,0,.1),0 0 0 1px rgba(184,134,11,.12);
+  --red:#b22222;--red2:#d43030;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:hidden}
+
+/* ===== AMBIENT BACKGROUND ===== */
+.ambient-bg{position:fixed;inset:0;z-index:-3;pointer-events:none}
+.ambient-bg .bg-gradient{position:absolute;inset:0;background:
+  radial-gradient(ellipse at 20% 50%,rgba(184,134,11,.06) 0%,transparent 50%),
+  radial-gradient(ellipse at 80% 20%,rgba(200,120,60,.05) 0%,transparent 50%),
+  radial-gradient(ellipse at 50% 80%,rgba(45,122,78,.04) 0%,transparent 50%),
+  radial-gradient(ellipse at 60% 40%,rgba(180,100,80,.03) 0%,transparent 60%);
+  animation:bgPulse 12s ease-in-out infinite}
+@keyframes bgPulse{0%,100%{opacity:.8}50%{opacity:1}}
+
+/* ===== SCENE BG ===== */
+.scene{position:fixed;inset:0;z-index:-2;pointer-events:none}
+.scene svg.mountains{position:absolute;bottom:0;width:100%;height:55%}
+.scene .mist{position:absolute;bottom:0;left:0;right:0;height:40%;
+  background:linear-gradient(to top,rgba(240,235,224,.95) 0%,transparent 100%)}
+.scene .moon{position:absolute;top:6%;right:12%;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,rgba(255,215,150,.6),rgba(240,190,120,.2) 50%,transparent 70%);
+  box-shadow:0 0 60px rgba(240,180,100,.2),0 0 120px rgba(240,180,100,.08);
+  animation:moonGlow 6s ease-in-out infinite}
+@keyframes moonGlow{0%,100%{box-shadow:0 0 60px rgba(240,180,100,.2),0 0 120px rgba(240,180,100,.08)}50%{box-shadow:0 0 100px rgba(240,180,100,.3),0 0 160px rgba(240,180,100,.12)}}
+
+/* ===== FIREFLIES / PARTICLES ===== */
+.particles{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.particle{position:absolute;border-radius:50%;
+  animation:floatUp 8s infinite ease-in;opacity:0}
+.particle.gold{background:var(--pri);box-shadow:0 0 6px var(--pri),0 0 12px rgba(201,160,80,.4)}
+.particle.warm{background:#e8a860;box-shadow:0 0 4px #e8a860}
+.particle.jade{background:#7ec89a;box-shadow:0 0 4px #7ec89a}
+.particle.large{width:3px;height:3px}
+.particle.medium{width:2px;height:2px}
+.particle.small{width:1.5px;height:1.5px}
+@keyframes floatUp{0%{transform:translateY(100vh) translateX(0) scale(0);opacity:0}
+  15%{opacity:.9}85%{opacity:.15}
+  100%{transform:translateY(-10vh) translateX(var(--drift)) scale(1.8);opacity:0}}
+
+/* ===== PETALS (cherry blossom style) ===== */
+.petals{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.petal{position:absolute;width:8px;height:8px;background:rgba(220,160,140,.4);
+  border-radius:50% 0 50% 0;animation:petalFall 12s infinite linear;opacity:0}
+.petal:nth-child(odd){background:rgba(240,180,160,.35);border-radius:0 50% 0 50%}
+@keyframes petalFall{0%{transform:translateY(-5vh) rotate(0deg) translateX(0);opacity:0}
+  5%{opacity:.6}90%{opacity:.2}
+  100%{transform:translateY(105vh) rotate(720deg) translateX(var(--px));opacity:0}}
+
+/* ===== DRIFTING CLOUDS ===== */
+.clouds{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.cloud{position:absolute;background:rgba(0,0,0,.02);border-radius:50%;filter:blur(25px);animation:drift 40s infinite linear}
+.cloud:nth-child(1){width:350px;height:70px;top:12%;left:-350px;animation-duration:45s}
+.cloud:nth-child(2){width:450px;height:90px;top:22%;left:-450px;animation-duration:52s;animation-delay:-15s}
+.cloud:nth-child(3){width:280px;height:55px;top:32%;left:-280px;animation-duration:38s;animation-delay:-25s}
+.cloud:nth-child(4){width:380px;height:65px;top:18%;left:-380px;animation-duration:48s;animation-delay:-8s}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(calc(100vw + 800px))}}
+
+/* ===== SWORDSMAN SILHOUETTE ===== */
+.swordsman{position:fixed;bottom:6%;right:3%;z-index:-1;pointer-events:none;
+  opacity:.18;width:220px;height:360px;animation:sway 8s ease-in-out infinite;transform-origin:bottom center}
+@keyframes sway{0%,100%{transform:rotate(-2deg) translateY(0)}25%{transform:rotate(0deg) translateY(-4px)}50%{transform:rotate(2deg) translateY(0)}75%{transform:rotate(0deg) translateY(4px)}}
+.ink-splash{position:fixed;bottom:-60px;right:-40px;z-index:-1;pointer-events:none;
+  width:500px;height:250px;background:radial-gradient(ellipse at center,rgba(184,134,11,.08),transparent 70%);border-radius:50%}
+
+/* ===== LIGHT RAYS (subtle) ===== */
+.light-rays{position:fixed;inset:0;z-index:-2;pointer-events:none;overflow:hidden}
+.ray{position:absolute;top:-20%;width:1px;height:140%;
+  background:linear-gradient(to bottom,transparent,rgba(201,160,80,.04) 40%,rgba(201,160,80,.02) 60%,transparent);
+  animation:raySweep 20s infinite linear;opacity:.5}
+.ray:nth-child(1){left:20%;animation-delay:0s}
+.ray:nth-child(2){left:40%;animation-delay:-7s}
+.ray:nth-child(3){left:60%;animation-delay:-14s}
+@keyframes raySweep{0%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}100%{transform:rotate(-5deg)}}
+
+/* ===== LOGIN PAGE ===== */
+.login-wrap{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-bg-anim{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+/* 燕云十六声登录页壁纸 */
+.login-bg-anim::before{content:'';position:absolute;inset:0;
+  background-size:cover;background-position:center;
+  animation:loginBgCycle 18s infinite steps(1),loginBgBreath 6s ease-in-out infinite}
+@keyframes loginBgCycle{
+  0%{background-image:url('https://pic.qianye88.com/pic/b369c418c9a2d30566843c76e4d4306e.jpg')}
+  33%{background-image:url('https://pic.qianye88.com/pic/b53441e789f8638563760867b75f2be4.jpg')}
+  66%{background-image:url('https://pic.qianye88.com/pic/1bba43992c79606d074592381b5e95a6.jpg')}
+  100%{background-image:url('https://pic.qianye88.com/pic/b369c418c9a2d30566843c76e4d4306e.jpg')}
+}
+@keyframes loginBgBreath{0%,100%{opacity:.16}50%{opacity:.25}}
+.login-bg-anim .circle{position:absolute;border-radius:50%;border:1px solid rgba(201,160,80,.06);
+  animation:loginCircle 20s infinite linear}
+.login-bg-anim .circle:nth-child(1){width:600px;height:600px;top:-200px;left:-100px;animation-duration:25s}
+.login-bg-anim .circle:nth-child(2){width:500px;height:500px;bottom:-150px;right:-80px;animation-duration:30s;animation-delay:-8s}
+.login-bg-anim .circle:nth-child(3){width:400px;height:400px;top:40%;left:50%;animation-duration:22s;animation-delay:-15s;
+  border-color:rgba(180,120,60,.04)}
+@keyframes loginCircle{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.1)}100%{transform:rotate(360deg) scale(1)}}
+
+.login-card{background:var(--card);border:1px solid rgba(201,160,80,.12);border-radius:20px;
+  box-shadow:0 8px 48px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.02);
+  padding:48px 40px 36px;width:100%;max-width:430px;
+  animation:fadeSlideIn .8s cubic-bezier(.16,1,.3,1);
+  position:relative;z-index:2;
+  transition:box-shadow .4s,transform .4s}
+.login-card:hover{box-shadow:0 12px 56px rgba(0,0,0,.7),0 0 40px rgba(201,160,80,.06),inset 0 1px 0 rgba(255,255,255,.02);
+  transform:translateY(-2px)}
+.login-card::before{content:'';position:absolute;top:-1px;left:30px;right:30px;height:1px;
+  background:linear-gradient(to right,transparent,rgba(201,160,80,.3),transparent);
+  animation:loginLine 3s ease-in-out infinite}
+@keyframes loginLine{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(40px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.login-card .emblem{text-align:center;margin-bottom:24px}
+.login-card .emblem .sword-icon{font-size:3.2em;filter:drop-shadow(0 0 20px rgba(201,160,80,.4));
+  animation:swordFloat 3s ease-in-out infinite;display:inline-block}
+@keyframes swordFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.login-card .emblem h1{font-family:var(--font2);font-size:1.7em;font-weight:400;letter-spacing:6px;color:var(--pri);margin-top:4px;
+  text-shadow:0 0 30px rgba(201,160,80,.3)}
+.login-card .emblem p{font-size:.72em;color:var(--text2);letter-spacing:3px;margin-top:4px}
+.login-card .tabs{display:flex;background:rgba(255,255,255,.02);border-radius:12px;padding:3px;margin-bottom:24px;
+  transition:background .3s}
+.login-card .tabs button{flex:1;padding:11px;border:none;background:none;color:var(--text2);font-size:.85em;
+  cursor:pointer;border-radius:10px;transition:all .3s;font-family:var(--font);letter-spacing:1px;position:relative}
+.login-card .tabs button.on{background:var(--prid);color:var(--pri);
+  box-shadow:0 0 12px rgba(201,160,80,.08)}
+.login-card .tabs button:hover:not(.on){color:#c0b090}
+
+/* ===== TIER TABS (赛程管理) ===== */
+.tier-tabs{display:inline-flex;gap:6px;background:var(--card2);padding:4px;border-radius:12px;border:1px solid var(--border)}
+.tier-tab{padding:9px 18px;border:none;background:transparent;border-radius:9px;font-size:.82em;font-weight:500;
+  cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);font-family:var(--font);letter-spacing:.8px;
+  color:var(--text2);position:relative}
+.tier-tab:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.tier-tab.on{color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.2);transform:translateY(-1px)}
+.tier-tab.tier-t1.on{background:linear-gradient(135deg,#b8860b,#c9a050)}
+.tier-tab.tier-t2.on{background:linear-gradient(135deg,#c0442c,#d4703a)}
+.tier-tab.tier-t3.on{background:linear-gradient(135deg,#2d7a4e,#4aad6e)}
+.tier-tab.tier-team.on{background:linear-gradient(135deg,#4a5d7a,#6a8db5)}
+.tier-tab:not(.on).tier-t1:hover{border-color:#c9a050;color:#c9a050}
+.tier-tab:not(.on).tier-t2:hover{border-color:#d4703a;color:#d4703a}
+.tier-tab:not(.on).tier-t3:hover{border-color:#4aad6e;color:#4aad6e}
+.tier-tab:not(.on).tier-team:hover{border-color:#6a8db5;color:#6a8db5}
+
+/* ===== SEAL ===== */
+.seal{position:absolute;bottom:-10px;right:-10px;width:56px;height:56px;
+  border:2px solid rgba(180,60,40,.6);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  transform:rotate(8deg);color:rgba(180,60,40,.5);
+  font-family:var(--font2);font-size:11px;font-weight:700;
+  line-height:1.2;text-align:center;letter-spacing:1px;
+  pointer-events:none;user-select:none;
+  animation:sealPulse 4s ease-in-out infinite}
+@keyframes sealPulse{0%,100%{border-color:rgba(180,60,40,.6);color:rgba(180,60,40,.5)}50%{border-color:rgba(200,80,50,.8);color:rgba(200,80,50,.7)}}
+
+/* ===== FORMS ===== */
+input,select,textarea{font-family:inherit;font-size:.88em}
+input,select{padding:11px 13px;border:1px solid var(--border);border-radius:8px;
+  background:rgba(255,255,255,.85);color:var(--text);width:100%;transition:all .3s}
+input:focus,select:focus{outline:none;border-color:var(--pri);
+  box-shadow:0 0 0 3px rgba(184,134,11,.1),0 0 12px rgba(184,134,11,.08)}
+::placeholder{color:rgba(138,128,112,.4)}
+.form-g{margin-bottom:14px}.form-g label{display:block;margin-bottom:5px;font-size:.78em;
+  color:var(--text2);font-weight:500;letter-spacing:.5px}
+.form-r{display:flex;gap:12px}.form-r>*{flex:1}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 18px;border:none;border-radius:8px;font-weight:500;
+  cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);
+  font-size:.85em;letter-spacing:.3px;position:relative;overflow:hidden}
+.btn:active{transform:scale(.97)}
+.btn-p{background:linear-gradient(135deg,var(--pri),#b8903a);color:#1a1a10}
+.btn-p:hover{box-shadow:0 6px 24px rgba(201,160,80,.4);transform:translateY(-2px)}
+.btn-p::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(255,255,255,.1),transparent);
+  transform:translateX(-100%);transition:transform .6s}
+.btn-p:hover::after{transform:translateX(100%)}
+.btn-s{background:var(--t3);color:#fff}.btn-s:hover{box-shadow:0 4px 16px rgba(90,158,111,.3);transform:translateY(-1px)}
+.btn-e{background:rgba(192,57,43,.8);color:#fff}.btn-e:hover{background:rgba(220,70,50,.9);transform:translateY(-1px)}
+.btn-o{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-o:hover{background:rgba(255,255,255,.04);border-color:rgba(201,160,80,.2);transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.03);color:var(--text2)}
+.btn-g:hover{background:rgba(255,255,255,.06);color:var(--text)}
+.btn-sm{padding:6px 14px;font-size:.78em}.btn-xs{padding:4px 10px;font-size:.7em;border-radius:6px}
+.btn-glow{animation:btnGlow 2s ease-in-out infinite}
+@keyframes btnGlow{0%,100%{box-shadow:0 0 8px rgba(201,160,80,.2)}50%{box-shadow:0 0 20px rgba(201,160,80,.4)}}
+
+/* ===== BADGES ===== */
+.badge{display:inline-block;padding:3px 12px;border-radius:99px;font-size:.7em;font-weight:600;letter-spacing:.5px;
+  transition:all .3s}
+.bt1{background:rgba(201,160,80,.1);color:var(--t1);border:1px solid rgba(201,160,80,.18)}
+.bt2{background:rgba(192,120,64,.1);color:var(--t2);border:1px solid rgba(192,120,64,.18)}
+.bt3{background:rgba(90,158,111,.1);color:var(--t3);border:1px solid rgba(90,158,111,.18)}
+.bn{background:rgba(255,255,255,.03);color:var(--text2)}
+.btm{background:rgba(90,158,111,.08);color:var(--t3);border:1px solid rgba(90,158,111,.15)}
+
+/* ===== APP LAYOUT ===== */
+.app{display:none;min-height:100vh;position:relative;z-index:1}
+.app.on{display:flex}
+.sidebar{width:230px;background:rgba(255,253,245,.96);border-right:1px solid rgba(184,134,11,.1);
+  position:fixed;top:0;left:0;bottom:0;z-index:10;display:flex;flex-direction:column;
+  backdrop-filter:blur(12px);transition:all .3s}
+.sidebar .s-hd{padding:24px 20px 18px;border-bottom:1px solid rgba(184,134,11,.12);
+  font-family:var(--font2);font-size:1em;letter-spacing:3px;color:var(--pri);text-align:center}
+.sidebar .s-hd .sub{font-size:.6em;color:var(--text2);letter-spacing:2px;display:block;margin-top:2px}
+.sidebar nav{flex:1;padding:10px 0}
+.sidebar nav a{display:flex;align-items:center;gap:12px;padding:12px 22px;color:var(--text2);
+  font-size:.8em;text-decoration:none;transition:all .25s;border-left:3px solid transparent;
+  letter-spacing:.5px;position:relative}
+.sidebar nav a::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+  background:linear-gradient(to right,rgba(184,134,11,.08),transparent);transition:width .3s}
+.sidebar nav a:hover,.sidebar nav a.on{color:var(--pri);background:var(--prid);border-left-color:var(--pri)}
+.sidebar nav a:hover::before,.sidebar nav a.on::before{width:100%}
+.sidebar .s-art{height:110px;margin:6px 10px;border-radius:8px;
+  background-size:cover;background-position:center;
+  animation:sArtCycle 18s infinite steps(1);
+  opacity:.3;border:1px solid rgba(184,134,11,.15);
+  transition:opacity .5s}
+@keyframes sArtCycle{
+  0%{background-image:url('https://pic.qianye88.com/pic/1bba43992c79606d074592381b5e95a6.jpg')}
+  33%{background-image:url('https://pic.qianye88.com/pic/b369c418c9a2d30566843c76e4d4306e.jpg')}
+  66%{background-image:url('https://pic.qianye88.com/pic/b53441e789f8638563760867b75f2be4.jpg')}
+  100%{background-image:url('https://pic.qianye88.com/pic/1bba43992c79606d074592381b5e95a6.jpg')}
+}
+.sidebar .s-art:hover{opacity:.5}
+
+/* 十六州风云色条 */
+.color-strip{position:fixed;bottom:0;left:0;right:0;height:3px;z-index:20;pointer-events:none;
+  background:linear-gradient(to right,
+    #8b1a1a,#c41e3a,#d4603b,#c9a050,#b8860b,
+    #6b8e23,#2d7a4e,#3b7a8a,#4a5d7a,#483c52,
+    #5c3a2e,#7a5c4a,#8a7040,#6a5540,#4a3a2a,#3a2a1a
+  );opacity:.7}
+.sidebar .s-ft{border-top:1px solid rgba(184,134,11,.1);padding:14px 20px;
+  display:flex;justify-content:space-between;align-items:center;font-size:.75em}
+.main{margin-left:230px;flex:1;padding:28px 32px;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.tb{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.tb h2{font-family:var(--font2);font-size:1.2em;font-weight:400;letter-spacing:2px}
+
+/* ===== CARDS ===== */
+.card{background:var(--card);border:1px solid rgba(255,255,255,.03);border-radius:12px;
+  padding:22px;margin-bottom:16px;box-shadow:var(--shadow);position:relative;
+  transition:all .4s cubic-bezier(.4,0,.2,1)}
+.card:hover{border-color:rgba(201,160,80,.06);box-shadow:var(--card-hover)}
+.card h2{font-size:.95em;margin-bottom:14px;font-weight:500;letter-spacing:1px}
+.card h3{font-size:.85em;margin:14px 0 8px;font-weight:500;color:var(--text2)}
+.card .card-trim{position:absolute;top:0;left:16px;right:16px;height:1px;
+  background:linear-gradient(to right,transparent,rgba(201,160,80,.15),transparent)}
+.card.animate-in{animation:cardSlideUp .5s cubic-bezier(.16,1,.3,1) both}
+@keyframes cardSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.8em}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,.03)}
+th{color:var(--text2);font-weight:500;font-size:.7em;letter-spacing:1px;text-transform:uppercase}
+tr{transition:all .2s}
+tr:hover{background:rgba(255,255,255,.015)}
+tr.q{background:rgba(39,174,96,.04)}tr.q td:first-child::before{content:'✓ ';color:var(--t3);font-size:.8em}
+.info-box{background:rgba(201,160,80,.03);border-left:2px solid var(--pri);
+  padding:12px 16px;border-radius:0 8px 8px 0;font-size:.78em;color:var(--text2);
+  margin-bottom:16px;line-height:2;animation:infoGlow 4s ease-in-out infinite}
+@keyframes infoGlow{0%,100%{border-left-color:var(--pri)}50%{border-left-color:rgba(201,160,80,.4)}}
+
+/* ===== STATS ===== */
+.stat-r{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px}
+.stat{background:var(--card);border:1px solid rgba(255,255,255,.02);border-radius:10px;
+  padding:16px;text-align:center;box-shadow:var(--shadow);
+  transition:all .4s;position:relative;overflow:hidden}
+.stat::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,var(--pri),transparent);
+  opacity:0;transition:opacity .4s}
+.stat:hover{transform:translateY(-3px);box-shadow:var(--card-hover)}
+.stat:hover::after{opacity:.5}
+.stat .v{font-size:1.7em;font-weight:700;transition:all .3s}
+.stat .l{font-size:.7em;color:var(--text2);margin-top:3px;letter-spacing:.5px}
+
+/* ===== GROUP CARDS ===== */
+.g-grid{display:grid;grid-template-columns:1fr;gap:16px}
+.g-card{background:var(--card2);border:1px solid rgba(255,255,255,.02);border-radius:10px;
+  overflow:hidden;box-shadow:var(--shadow);max-width:100%;
+  transition:all .4s cubic-bezier(.4,0,.2,1)}
+.g-card:hover{transform:translateY(-2px);box-shadow:var(--card-hover)}
+.g-card .g-hd{padding:12px 16px;font-weight:500;font-size:.82em;letter-spacing:1px;
+  border-bottom:1px solid rgba(255,255,255,.03);display:flex;justify-content:space-between;align-items:center;
+  transition:all .3s}
+.g-card.t1 .g-hd{background:rgba(201,160,80,.05);color:var(--t1)}
+.g-card.t2 .g-hd{background:rgba(192,120,64,.05);color:var(--t2)}
+.g-card.t3 .g-hd{background:rgba(90,158,111,.05);color:var(--t3)}
+
+.m-row{display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:.78em;
+  border-bottom:1px solid rgba(255,255,255,.02);flex-wrap:nowrap;overflow-x:auto;
+  transition:all .2s;min-width:0}
+.m-row:hover{background:rgba(255,255,255,.01)}
+.m-row input{width:42px;text-align:center;padding:6px;font-size:.8em}
+.m-row .vs{font-weight:600;color:var(--pri)}
+.m-row:last-child{border-bottom:none}
+.m-row .date-inp{width:120px;font-size:.72em;padding:5px}
+
+/* ===== BRACKET ===== */
+.bk-wrap{overflow-x:auto;padding:16px 0}
+.bk-row{display:flex;align-items:flex-start;gap:0;min-width:max-content;justify-content:center}
+.bk-col{min-width:200px}.bk-col .bk-ttl{text-align:center;font-size:.78em;color:var(--text2);
+  margin-bottom:10px;letter-spacing:1px}
+.bk-m{background:var(--card2);border:1px solid rgba(255,255,255,.03);border-radius:10px;
+  padding:10px 12px;margin-bottom:12px;box-shadow:var(--shadow);font-size:.8em;
+  transition:all .4s}
+.bk-m:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.06)}
+.bk-m.won{border-color:var(--pri);box-shadow:0 0 20px rgba(201,160,80,.08);
+  animation:wonPulse 2s ease-in-out infinite}
+@keyframes wonPulse{0%,100%{box-shadow:0 0 20px rgba(201,160,80,.08)}50%{box-shadow:0 0 32px rgba(201,160,80,.14)}}
+.bk-m .p1,.bk-m .p2{padding:2px 0;transition:color .3s}
+.bk-m .p1.w,.bk-m .p2.w{color:var(--pri);font-weight:600}
+.bk-m .p1.w::before,.bk-m .p2.w::before{content:'★ ';font-size:.6em;animation:starSpin 3s linear infinite;display:inline-block}
+@keyframes starSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.bk-m .sc{font-size:.7em;color:var(--text2);text-align:center}
+.bk-m .rd{font-size:.65em;color:var(--text2)}
+.bk-arr{display:flex;align-items:center;justify-content:center;width:32px;
+  color:var(--pri);opacity:.35;font-size:1em;flex-shrink:0;
+  animation:arrPulse 2s ease-in-out infinite}
+@keyframes arrPulse{0%,100%{opacity:.3}50%{opacity:.5}}
+.rs-card{background:var(--card2);border:1px solid rgba(255,255,255,.02);border-radius:10px;
+  padding:14px 16px;margin-left:10px;box-shadow:var(--shadow);font-size:.8em;
+  transition:all .4s}
+.rs-card:hover{border-color:rgba(201,160,80,.1)}
+.rs-card div{margin:4px 0}
+
+/* ===== TOAST / MODAL ===== */
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;padding:12px 22px;border-radius:10px;
+  background:var(--card2);border:1px solid var(--pri);color:var(--pri);font-size:.8em;
+  box-shadow:0 4px 24px rgba(0,0,0,.5),0 0 20px rgba(201,160,80,.1);
+  animation:toastIn .4s cubic-bezier(.16,1,.3,1);letter-spacing:.5px}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);
+  animation:overlayIn .3s ease}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--card);border:1px solid rgba(201,160,80,.12);border-radius:14px;
+  padding:28px;max-width:520px;width:90%;max-height:85vh;overflow-y:auto;
+  box-shadow:0 12px 48px rgba(0,0,0,.6),0 0 40px rgba(201,160,80,.04);
+  animation:modalIn .4s cubic-bezier(.16,1,.3,1)}
+@keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal h3{font-family:var(--font2);font-weight:400;margin-bottom:18px;letter-spacing:1px}
+
+/* ===== KNOCKOUT PARTICIPANT SELECT ===== */
+.ko-select{min-width:100px;padding:4px 6px;font-size:.7em;border-radius:4px;
+  background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.05);color:var(--text);cursor:pointer}
+.ko-select:focus{border-color:var(--pri);outline:none}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .sidebar{width:56px}.sidebar .s-hd{font-size:0}.sidebar .s-hd .sub{display:none}
+  .sidebar nav a span{display:none}
+  .main{margin-left:56px;padding:16px 12px}.form-r{flex-direction:column}.bk-row{flex-direction:column;align-items:center}
+}
+</style>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<!-- ===== 视频Intro ===== -->
+<div class="video-intro" id="videoIntro">
+  <video id="introVideo" src="yanyun_intro.mp4" muted playsinline preload="auto"></video>
+  <div class="video-intro-overlay"></div>
+  <div class="video-intro-text">⚔️ 论剑问道</div>
+</div>
+<style>
+.video-intro{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:1;transition:opacity 1.5s ease}
+.video-intro.fadeout{opacity:0}
+.video-intro.done{display:none}
+.video-intro video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.video-intro-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.2),rgba(0,0,0,.5))}
+.video-intro-text{position:absolute;bottom:15%;left:50%;transform:translateX(-50%);
+  font-family:var(--font2);font-size:2.2em;letter-spacing:8px;color:#fff;
+  text-shadow:0 0 40px rgba(201,160,80,.6),0 4px 20px rgba(0,0,0,.8);
+  animation:introText 1s ease-out .5s both}
+@keyframes introText{from{opacity:0;transform:translateX(-50%) translateY(30px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+</style>
+
+<!-- ===== AMBIENT BACKGROUND ===== -->
+<div class="ambient-bg"><div class="bg-gradient"></div></div>
+
+<!-- ===== 燕云十六声 游戏壁纸层 ===== -->
+<div class="game-wallpaper" id="gameWallpaper"></div>
+
+<!-- ===== 视频背景层 (登录后) ===== -->
+<video class="app-video-bg" id="appVideoBg" src="yanyun_intro.mp4" muted loop playsinline></video>
+<style>
+.app-video-bg{position:fixed;inset:0;z-index:-5;pointer-events:none;object-fit:cover;opacity:.1;
+  filter:brightness(.7) saturate(.8);display:none}
+.app-video-bg.on{display:block}
+</style>
+
+<!-- ===== 视频截图装饰 ===== -->
+<div class="video-frames" id="videoFrames"></div>
+<style>
+.video-frames{position:fixed;inset:0;z-index:-2;pointer-events:none;display:none}
+.video-frames.on{display:block}
+.vid-frame{position:absolute;border-radius:12px;overflow:hidden;opacity:.12;
+  box-shadow:0 4px 20px rgba(0,0,0,.3);transition:opacity .6s}
+.vid-frame:hover{opacity:.25}
+.vid-frame img{width:100%;height:100%;object-fit:cover}
+.vid-frame.f1{top:5%;right:3%;width:200px;height:120px;animation:frameFloat1 14s ease-in-out infinite}
+.vid-frame.f2{bottom:10%;left:3%;width:180px;height:240px;animation:frameFloat2 16s ease-in-out infinite}
+.vid-frame.f3{top:40%;right:2%;width:160px;height:100px;animation:frameFloat3 12s ease-in-out infinite}
+@keyframes frameFloat1{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(-15px,10px) rotate(2deg)}}
+@keyframes frameFloat2{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(10px,-8px) rotate(-1.5deg)}}
+@keyframes frameFloat3{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(-10px,-5px) rotate(1deg)}}
+</style>
+<style>
+.game-wallpaper{position:fixed;inset:0;z-index:-4;pointer-events:none;opacity:.14;
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+  animation:wallpaperCycle 24s infinite steps(1),wallpaperFade 8s ease-in-out infinite}
+/* 三张燕云十六声4K壁纸轮播 */
+@keyframes wallpaperCycle{
+  0%{background-image:url('https://pic.qianye88.com/pic/b53441e789f8638563760867b75f2be4.jpg')}
+  33%{background-image:url('https://pic.qianye88.com/pic/1bba43992c79606d074592381b5e95a6.jpg')}
+  66%{background-image:url('https://pic.qianye88.com/pic/b369c418c9a2d30566843c76e4d4306e.jpg')}
+  100%{background-image:url('https://pic.qianye88.com/pic/b53441e789f8638563760867b75f2be4.jpg')}
+}
+@keyframes wallpaperFade{0%,100%{opacity:.1}50%{opacity:.16}}
+</style>
+
+<!-- ===== LIGHT RAYS ===== -->
+<div class="light-rays">
+  <div class="ray"></div><div class="ray"></div><div class="ray"></div>
+</div>
+
+<!-- ===== SCENE ===== -->
+<div class="scene">
+  <div class="moon"></div>
+  <svg class="mountains" viewBox="0 0 1440 500" preserveAspectRatio="none">
+    <!-- 远山层 -->
+    <path d="M0,500 L0,280 L100,240 L200,270 L300,180 L420,250 L540,140 L660,220 L780,120 L900,210 L1020,130 L1140,190 L1260,140 L1380,200 L1440,160 L1440,500Z" fill="rgba(180,170,155,.2)"/>
+    <!-- 中山层 -->
+    <path d="M0,500 L0,320 L160,280 L300,320 L450,200 L580,290 L720,180 L860,270 L1000,200 L1140,260 L1280,180 L1440,250 L1440,500Z" fill="rgba(160,150,135,.3)"/>
+    <!-- 近山层 -->
+    <path d="M0,500 L0,360 L200,300 L380,360 L560,260 L740,340 L920,290 L1100,330 L1280,280 L1440,320 L1440,500Z" fill="rgba(140,130,115,.45)"/>
+    <!-- 远塔 -->
+    <g transform="translate(260,190)" opacity=".15">
+      <rect x="-10" y="-45" width="20" height="55" fill="#8a7a60"/>
+      <polygon points="-18,-45 0,-68 18,-45" fill="#9a8a70"/>
+      <polygon points="-16,-55 0,-74 16,-55" fill="#aa9a80"/>
+      <polygon points="-14,-64 0,-80 14,-64" fill="#baaa90"/>
+    </g>
+    <!-- 山间雾 -->
+    <ellipse cx="900" cy="290" rx="120" ry="20" fill="rgba(220,200,160,.03)"/>
+    <ellipse cx="500" cy="320" rx="80" ry="12" fill="rgba(220,200,160,.02)"/>
+  </svg>
+  <div class="mist"></div>
+</div>
+
+<!-- ===== CLOUDS ===== -->
+<div class="clouds">
+  <div class="cloud"></div><div class="cloud"></div><div class="cloud"></div><div class="cloud"></div>
+</div>
+
+<!-- ===== PETALS ===== -->
+<div class="petals" id="petals"></div>
+
+<!-- ===== SWORDSMAN ===== -->
+<div class="swordsman">
+  <svg viewBox="0 0 140 240" width="200" height="340" fill="none">
+    <!-- 斗笠 -->
+    <ellipse cx="70" cy="38" rx="30" ry="6" fill="rgba(80,50,30,.3)"/>
+    <path d="M42,36 Q70,18 98,36" fill="rgba(80,50,30,.25)"/>
+    <!-- 身躯 -->
+    <path d="M55,42 Q52,70 50,100 L90,100 Q88,70 85,42 Z" fill="rgba(60,40,20,.25)"/>
+    <!-- 左臂 + 剑 -->
+    <path d="M55,55 L30,75 L25,130" stroke="rgba(120,80,40,.4)" stroke-width="2.5" fill="none"/>
+    <line x1="22" y1="80" x2="38" y2="72" stroke="rgba(150,100,50,.3)" stroke-width="1.5"/>
+    <!-- 右臂 -->
+    <path d="M85,55 L100,70 L105,90" stroke="rgba(100,60,30,.3)" stroke-width="2" fill="none"/>
+    <!-- 下摆 -->
+    <path d="M50,100 L35,180 Q40,185 45,175 L52,110 Z" fill="rgba(60,40,20,.2)"/>
+    <path d="M90,100 L105,180 Q100,185 95,175 L88,110 Z" fill="rgba(60,40,20,.2)"/>
+    <!-- 剑光 -->
+    <line x1="25" y1="130" x2="20" y2="170" stroke="rgba(180,140,60,.6)" stroke-width="2"/>
+    <circle cx="20" cy="170" r="4" fill="rgba(200,160,80,.25)"/>
+  </svg>
+</div>
+<div class="ink-splash"></div>
+
+<!-- ===== 刀枪武器动画 ===== -->
+<div class="weapon weapon-sword" id="weaponSword">
+  <svg viewBox="0 0 80 200" width="60" height="160">
+    <!-- 剑柄 -->
+    <rect x="36" y="110" width="8" height="30" rx="2" fill="rgba(139,90,43,.7)"/>
+    <rect x="35" y="140" width="10" height="5" rx="1" fill="rgba(184,134,11,.5)"/>
+    <!-- 剑身 -->
+    <polygon points="40,0 36,15 36,110 44,110 44,15" fill="rgba(180,180,190,.7)"/>
+    <line x1="40" y1="20" x2="40" y2="105" stroke="rgba(220,220,230,.5)" stroke-width="1"/>
+    <circle cx="40" cy="5" r="4" fill="rgba(220,200,150,.6)"/>
+  </svg>
+</div>
+<div class="weapon weapon-spear" id="weaponSpear">
+  <svg viewBox="0 0 60 240" width="50" height="180">
+    <!-- 枪杆 -->
+    <rect x="27" y="50" width="6" height="190" rx="3" fill="rgba(120,60,30,.6)"/>
+    <!-- 枪头 -->
+    <polygon points="30,0 24,25 30,50 36,25" fill="rgba(200,200,210,.7)"/>
+    <line x1="30" y1="10" x2="30" y2="45" stroke="rgba(240,240,250,.4)" stroke-width="1"/>
+    <!-- 枪缨 -->
+    <ellipse cx="30" cy="55" rx="12" ry="6" fill="rgba(200,40,40,.4)"/>
+  </svg>
+</div>
+
+<style>
+.weapon{position:fixed;z-index:-1;pointer-events:none;filter:drop-shadow(0 4px 12px rgba(0,0,0,.15))}
+.weapon-sword{top:15%;left:8%;animation:swordOrbit 14s ease-in-out infinite}
+.weapon-spear{top:55%;right:5%;animation:spearOrbit 16s ease-in-out infinite;animation-delay:-6s}
+@keyframes swordOrbit{
+  0%{transform:translate(0,0) rotate(-5deg)}25%{transform:translate(30px,-20px) rotate(3deg)}
+  50%{transform:translate(15px,10px) rotate(-2deg)}75%{transform:translate(-10px,-15px) rotate(6deg)}
+  100%{transform:translate(0,0) rotate(-5deg)}
+}
+@keyframes spearOrbit{
+  0%{transform:translate(0,0) rotate(5deg)}25%{transform:translate(-25px,15px) rotate(-3deg)}
+  50%{transform:translate(-10px,-10px) rotate(-6deg)}75%{transform:translate(20px,-5px) rotate(2deg)}
+  100%{transform:translate(0,0) rotate(5deg)}
+}
+</style>
+
+<!-- ===== 十六州风云色条 ===== -->
+<div class="color-strip"></div>
+
+<!-- ===== PARTICLES ===== -->
+<div class="particles" id="particles"></div>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="loginPage" class="login-wrap">
+  <div class="login-bg-anim">
+    <div class="circle"></div><div class="circle"></div><div class="circle"></div>
+  </div>
+  <div class="login-card">
+    <div class="emblem">
+      <div class="sword-icon">⚔️</div>
+      <h1>论 剑 问 道</h1>
+      <p>星 · P V P · 和 谐 挑 战 赛 <span style="display:inline-block;background:linear-gradient(135deg,#c9a050,#e8a860);color:#1a1a10;padding:1px 6px;border-radius:3px;font-size:.65em;vertical-align:middle;margin-left:4px;letter-spacing:0">v3.0</span></p>
+    </div>
+    <div class="tabs">
+      <button class="on" onclick="swLTab('login')">登 录</button>
+      <button onclick="swLTab('register')">参 赛 注 册</button>
+    </div>
+    <div id="loginForm">
+      <div class="form-g"><label>用户名</label><input id="loginUser" placeholder="请输入用户名" autocomplete="off"></div>
+      <div class="form-g"><label>密码</label><input id="loginPass" type="password" placeholder="请输入密码"></div>
+      <button class="btn btn-p btn-glow" style="width:100%;padding:12px" onclick="doLogin()">登 录</button>
+    </div>
+    <div id="registerForm" style="display:none">
+      <div class="form-r"><div class="form-g"><label>用户名 *</label><input id="regUser" placeholder="设置登录名"></div>
+        <div class="form-g"><label>密码 *</label><input id="regPass" type="password" placeholder="至少4位"></div></div>
+      <div class="form-g"><label>游戏角色名 *</label><input id="regName" placeholder="游戏ID"></div>
+      <div class="form-r"><div class="form-g"><label>论剑分</label><input id="regScore" type="number" value="0"></div>
+        <div class="form-g"><label>胜率 (%)</label><input id="regWinrate" type="number" min="0" max="100" value="50"></div></div>
+      <div class="form-g"><label>参赛项目</label><select id="regEvent"><option value="both">个人赛 + 3V3</option><option value="individual">仅个人赛</option><option value="team">仅3V3</option></select></div>
+      <div class="form-r"><div class="form-g"><label>联系方式</label><input id="regContact" placeholder="微信号"></div><div class="form-g"><label>备注</label><input id="regNote" placeholder="职业等"></div></div>
+      <button class="btn btn-p" style="width:100%;padding:12px" onclick="doRegister()">注 册</button>
+      <p style="text-align:center;margin-top:12px;font-size:.75em"><a href="#" onclick="swLTab('login')" style="color:var(--pri);text-decoration:none">← 返回登录</a></p>
+    </div>
+    <div class="seal">论剑<br>问道</div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app" class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main" id="mainContent"></main>
+</div>
+
+<script>
+// ==================== DATA ====================
+// ==================== SOUND ENGINE ====================
+let _ac=null;
+function ac(){if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();return _ac}
+function sfx(freq,type,dur,vol,delay){
+  try{const a=ac();const o=a.createOscillator(),g=a.createGain();
+  o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol,a.currentTime+delay);
+  g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+delay+dur);
+  o.connect(g);g.connect(a.destination);o.start(a.currentTime+delay);o.stop(a.currentTime+delay+dur)}catch(e){}
+}
+function sClick(){sfx(1200,'sine',.06,.04,0);sfx(1600,'sine',.04,.02,.03)}
+function sSword(){sfx(180,'sawtooth',.12,.05,0);sfx(600,'sine',.08,.04,.04);sfx(900,'sine',.06,.03,.06)}
+function sLock(){sfx(300,'triangle',.15,.06,0);sfx(500,'triangle',.12,.05,.08)}
+function sPage(){sfx(800,'sine',.05,.03,0);sfx(1000,'sine',.04,.02,.04)}
+function sError(){sfx(150,'square',.2,.06,0);sfx(100,'square',.2,.06,.06)}
+
+// ==================== CLOUD SYNC (Firebase) ====================
+let _fb=null,_fbReady=false,_fbSyncing=false;
+const FB_KEYS=['users','session','players','m_t1','m_t2','m_t3','tmg','tmk','teams'];
+
+function fbInit(){
+  const cfg=ld('syncConfig');
+  if(!cfg||!cfg.apiKey){console.log('Firebase: 未配置');return}
+  try{
+    firebase.initializeApp(cfg);
+    _fb=firebase.database();_fbReady=true;
+    _fb.ref('.info/connected').on('value',snap=>{
+      const el=document.getElementById('syncDot');
+      if(el){el.style.background=snap.val()?'#2ecc71':'#e74c3c';el.title=snap.val()?'已连接云端':'未连接'}
+    });
+    // 监听远程变化
+    FB_KEYS.forEach(k=>{
+      _fb.ref('by5_'+k).on('value',snap=>{
+        if(_fbSyncing)return; // 本地写入中，跳过
+        const v=snap.val();
+        if(v!==null){localStorage.setItem('by5_'+k,JSON.stringify(v));D=loadAll();refreshUI()}
+      });
+    });
+    console.log('Firebase: 已连接');
+  }catch(e){console.error('Firebase init error:',e)}
+}
+function fbSave(k,v){
+  if(!_fbReady)return;
+  _fbSyncing=true;
+  _fb.ref('by5_'+k).set(v).then(()=>{_fbSyncing=false}).catch(()=>{_fbSyncing=false});
+}
+function fbSaveAll(d){
+  if(!_fbReady)return;
+  FB_KEYS.forEach(k=>{const v=d[k]||(k.startsWith('m_')||k==='tmg'||k==='tmk'?d.matches?.[k.replace('m_','')]:d.teamM?.[k==='tmg'?'groups':'knockout']);if(v!==undefined)fbSave(k,v)});
+}
+
+// 配置同步服务器
+function setupSync(){
+  const cfg=ld('syncConfig')||{};
+  const ov=document.createElement('div');ov.className='overlay';
+  ov.innerHTML=`<div class="modal" style="max-width:600px"><h3>☁️ 配置云端同步</h3>
+    <div class="info-box" style="font-size:.75em;line-height:1.8">
+      <b>步骤：</b><br>
+      1. 打开 <a href="https://console.firebase.google.com" target="_blank" style="color:var(--pri)">console.firebase.google.com</a> 创建免费项目<br>
+      2. 左侧 Build → <b>Realtime Database</b> → 创建数据库（选"测试模式"）<br>
+      3. 项目设置 → 常规 → 您的应用 → 网页应用 → 复制配置信息<br>
+      4. 粘贴到下方各字段中，点保存<br>
+      <span style="color:var(--red2)">⚠️ 所有设备输入<b>相同的配置</b>即可实时同步数据！</span>
+    </div>
+    <div class="form-r"><div class="form-g"><label>apiKey</label><input id="fbApiKey" value="${esc(cfg.apiKey||'')}"></div>
+    <div class="form-g"><label>authDomain</label><input id="fbAuthDomain" value="${esc(cfg.authDomain||'')}"></div></div>
+    <div class="form-r"><div class="form-g"><label>databaseURL</label><input id="fbDbUrl" value="${esc(cfg.databaseURL||'')}"></div>
+    <div class="form-g"><label>projectId</label><input id="fbProjId" value="${esc(cfg.projectId||'')}"></div></div>
+    <div class="form-r"><div class="form-g"><label>storageBucket</label><input id="fbStor" value="${esc(cfg.storageBucket||'')}"></div>
+    <div class="form-g"><label>messagingSenderId</label><input id="fbMsg" value="${esc(cfg.messagingSenderId||'')}"></div></div>
+    <div class="form-g"><label>appId</label><input id="fbAppId" value="${esc(cfg.appId||'')}"></div>
+    <button class="btn btn-p" id="fbSaveBtn">💾 保存并连接</button>
+    <button class="btn btn-e btn-xs" style="margin-left:6px" id="fbClearBtn">清除配置</button>
+    <button class="btn btn-o" style="margin-left:6px" onclick="this.closest('.overlay').remove()">取消</button>
+    <p style="font-size:.7em;margin-top:8px;color:var(--text2)"><span id="fbStatus"></span></p></div>`;
+  document.body.appendChild(ov);
+  document.getElementById('fbSaveBtn').onclick=()=>{
+    const nc={apiKey:document.getElementById('fbApiKey').value.trim(),authDomain:document.getElementById('fbAuthDomain').value.trim(),
+      databaseURL:document.getElementById('fbDbUrl').value.trim(),projectId:document.getElementById('fbProjId').value.trim(),
+      storageBucket:document.getElementById('fbStor').value.trim(),messagingSenderId:document.getElementById('fbMsg').value.trim(),
+      appId:document.getElementById('fbAppId').value.trim()};
+    if(!nc.apiKey||!nc.databaseURL||!nc.projectId){toast('apiKey, databaseURL, projectId 为必填项');return}
+    sv('syncConfig',nc);ov.remove();fbInit();toast('✅ 同步配置已保存，正在连接...');
+  };
+  document.getElementById('fbClearBtn').onclick=()=>{
+    if(!confirm('确定清除同步配置？'))return;
+    sv('syncConfig',null);_fbReady=false;_fb=null;ov.remove();toast('已清除同步配置');
+  };
+  document.getElementById('fbStatus').textContent=_fbReady?'🟢 已连接云端':'⚪ 尚未连接';
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove()});
+}
+
+// Override saveAll to also sync to cloud
+const _origSaveAll=saveAll;
+saveAll=function(d){
+  _origSaveAll(d);
+  if(_fbReady&&!_fbSyncing){
+    // Debounce cloud writes
+    clearTimeout(window._fbDebounce);
+    window._fbDebounce=setTimeout(()=>fbSaveAll(D),300);
+  }
+};
+
+// 手动推送到云端
+function pushToCloud(){
+  if(!_fbReady){toast('请先配置云端同步');return}
+  fbSaveAll(D);toast('✅ 数据已推送至云端');
+}
+function pullFromCloud(){
+  if(!_fbReady){toast('请先配置云端同步');return}
+  toast('⏳ 正在从云端拉取...');
+}
+
+function refreshUI(){
+  // 刷新当前页面内容
+  const m=document.getElementById('mainContent');if(!m||!D.session)return;
+  const nav=document.querySelector('.sidebar nav a.on');
+  if(nav){const p=nav.getAttribute('data-p');if(D.session.role==='admin')showAP(p);else showPP(p)}
+}
+
+// Hook sounds into all btn clicks
+document.addEventListener('click',function(e){
+  const t=e.target.closest('.btn');if(!t)return;
+  if(t.classList.contains('btn-e'))sError();
+  else if(t.classList.contains('btn-p'))sLock();
+  else if(t.classList.contains('btn-s'))sSword();
+  else sClick();
+});
+
+const K='by5_';
+function ld(k){try{const v5=localStorage.getItem(K+k);if(v5!==null)return JSON.parse(v5);const v4=localStorage.getItem('by4_'+k);if(v4!==null){const d=JSON.parse(v4);sv(k,d);return d}return null}catch(e){return null}}
+function sv(k,v){localStorage.setItem(K+k,JSON.stringify(v))}
+const TIERS={t1:'天罡组',t2:'地煞组',t3:'人杰组'};
+const TC={t1:'bt1',t2:'bt2',t3:'bt3'};
+
+function loadAll(){
+  let users=ld('users')||[];
+  if(users.length===0){
+    users.push({id:'admin',username:'admin',password:'admin123',role:'admin',name:'管理员',score:0,winrate:0,event:'',contact:'',note:'',registeredAt:new Date().toISOString()});
+    sv('users',users)
+  }
+  const m_t1=ld('m_t1')||{groups:{},knockout:[]};
+  const m_t2=ld('m_t2')||{groups:{},knockout:[]};
+  const m_t3=ld('m_t3')||{groups:{},knockout:[]};
+  return{
+    users,
+    session:ld('session')||null,
+    players:ld('players')||[],
+    matches:{t1:m_t1,t2:m_t2,t3:m_t3},
+    teamM:{groups:ld('tmg')||{},knockout:ld('tmk')||[]},
+    teams:ld('teams')||[]
+  };
+}
+function saveAll(d){
+  sv('users',d.users);sv('session',d.session);sv('players',d.players);
+  sv('m_t1',d.matches.t1);sv('m_t2',d.matches.t2);sv('m_t3',d.matches.t3);
+  sv('tmg',d.teamM.groups);sv('tmk',d.teamM.knockout);sv('teams',d.teams);
+}
+let D=loadAll();
+
+// ==================== UTILS ====================
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function toast(m){
+  const t=document.createElement('div');t.className='toast';t.textContent=m;
+  document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(10px)';setTimeout(()=>t.remove(),300)},2200)
+}
+function fmt(n){return n!==null&&n!==undefined?n:'-';}
+
+// ==================== ENHANCED PARTICLES ====================
+(function initParticles(){
+  const c=document.getElementById('particles');
+  const types=['gold','gold','warm','warm','jade','gold','warm'];
+  const sizes=['large','medium','medium','small','small','medium','small'];
+  for(let i=0;i<45;i++){
+    const d=document.createElement('div');
+    const tp=types[i%types.length],sz=sizes[i%sizes.length];
+    d.className='particle '+tp+' '+sz;
+    d.style.left=Math.random()*100+'%';
+    d.style.animationDelay=Math.random()*12+'s';
+    d.style.animationDuration=(7+Math.random()*14)+'s';
+    d.style.setProperty('--drift',(Math.random()*60-30)+'px');
+    c.appendChild(d);
+  }
+  // petals
+  const pDiv=document.getElementById('petals');
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');p.className='petal';
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDelay=Math.random()*14+'s';
+    p.style.animationDuration=(10+Math.random()*16)+'s';
+    p.style.setProperty('--px',(Math.random()*100-50)+'px');
+    pDiv.appendChild(p);
+  }
+})();
+
+// ==================== AUTH ====================
+function swLTab(t){
+  document.querySelectorAll('.tabs button').forEach((b,i)=>b.classList.toggle('on',(t==='login'&&i===0)||(t==='register'&&i===1)));
+  document.getElementById('loginForm').style.display=t==='login'?'':'none';
+  document.getElementById('registerForm').style.display=t==='register'?'':'none';
+}
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim(),p=document.getElementById('loginPass').value.trim();
+  if(!u||!p){toast('请输入用户名和密码');return}
+  const user=D.users.find(x=>x.username===u&&x.password===p);
+  if(!user){toast('用户名或密码错误');return}
+  D.session={id:user.id,username:user.username,role:user.role,name:user.name};saveAll(D);showApp();
+}
+function doRegister(){
+  const username=document.getElementById('regUser').value.trim(),password=document.getElementById('regPass').value.trim(),
+    name=document.getElementById('regName').value.trim(),score=parseInt(document.getElementById('regScore').value)||0,
+    winrate=parseInt(document.getElementById('regWinrate').value)||0,event=document.getElementById('regEvent').value,
+    contact=document.getElementById('regContact').value.trim(),note=document.getElementById('regNote').value.trim();
+  if(!username||!password){toast('用户名和密码不能为空');return}
+  if(password.length<4){toast('密码至少4位');return}
+  if(!name){toast('请输入游戏角色名');return}
+  if(D.users.find(x=>x.username===username)){toast('用户名已存在');return}
+  const user={id:'u_'+Date.now().toString(36),username,password,role:'player',name,score,winrate,event,contact,note,registeredAt:new Date().toISOString()};
+  D.users.push(user);
+  D.players.push({id:user.id,name,score,winrate,event,contact,note,group:null,teamId:null});
+  D.session={id:user.id,username,role:'player',name};saveAll(D);toast('注册成功！');showApp();
+}
+function doLogout(){D.session=null;saveAll(D);location.reload()}
+
+// ==================== APP ====================
+function showApp(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('app').classList.add('on');
+  D=loadAll();buildSidebar();
+  if(D.session.role==='admin')showAP('players');else showPP('myinfo');
+  setTimeout(startAppVideoBg,300);
+}
+function buildSidebar(){
+  const s=document.getElementById('sidebar'),r=D.session.role;let n='';
+  if(r==='admin'){
+    n=`<a href="#" class="on" data-p="players" onclick="showAP('players')">📋 报名管理</a>
+      <a href="#" data-p="groups" onclick="showAP('groups')">⚖️ 分组编排</a>
+      <a href="#" data-p="schedule" onclick="showAP('schedule')">📅 赛程管理</a>
+      <a href="#" data-p="bracket" onclick="showAP('bracket')">🏆 晋级图</a>
+      <a href="#" data-p="teams" onclick="showAP('teams')">🤝 3V3 组队</a>`;
+  }else{
+    n=`<a href="#" class="on" data-p="myinfo" onclick="showPP('myinfo')">👤 我的信息</a>
+      <a href="#" data-p="mysched" onclick="showPP('mysched')">📅 我的赛程</a>
+      <a href="#" data-p="viewbracket" onclick="showPP('viewbracket')">🏆 晋级图</a>`;
+  }
+  s.innerHTML=`<div class="s-hd">⚔️ 论剑问道<span class="sub">星PVP挑战赛</span></div>
+    <div class="s-art"></div>
+    <nav>${n}</nav>
+    ${r==='admin'?`<div style="padding:4px 16px;font-size:.65em;color:var(--text2);display:flex;align-items:center;gap:6px">
+      <span id="syncDot" style="width:7px;height:7px;border-radius:50%;background:#888;display:inline-block" title="未连接"></span>
+      <span>云端同步</span><button class="btn btn-g btn-xs" style="padding:2px 6px;font-size:.65em" onclick="setupSync()">⚙️</button>
+    </div>`:''}
+    <div class="s-ft"><span>${esc(D.session.name)} <span class="badge ${r==='admin'?'bt1':'bt3'}">${r==='admin'?'管理':'选手'}</span></span>
+    <button class="btn btn-g btn-xs" onclick="doLogout()">退出</button></div>`;
+}
+function setANav(p){document.querySelectorAll('.sidebar nav a').forEach(a=>a.classList.remove('on'));const a=document.querySelector(`[data-p="${p}"]`);if(a)a.classList.add('on');}
+
+// ==================== ADMIN PANELS ====================
+function showAP(p){setANav(p);sPage();const m=document.getElementById('mainContent');switch(p){
+  case'players':m.innerHTML=rPlayers();break;case'groups':m.innerHTML=rGroups();break;
+  case'schedule':m.innerHTML=rSchedule();break;case'bracket':m.innerHTML=rBracket();break;
+  case'teams':m.innerHTML=rTeams();break;
+}}
+
+// -- 报名管理 --
+function rPlayers(){
+  const ps=D.players,sorted=[...ps].sort((a,b)=>b.score-a.score||b.winrate-a.winrate);
+  const cnt=t=>ps.filter(p=>p.group===t).length;
+  let h=`<div class="tb"><h2>📋 报名管理</h2><span style="color:var(--text2)">${ps.length} 人</span></div>
+    <div class="stat-r">
+      <div class="stat"><div class="v">${ps.length}</div><div class="l">总报名</div></div>
+      <div class="stat"><div class="v" style="color:var(--t1)">${cnt('t1')}</div><div class="l">天罡组</div></div>
+      <div class="stat"><div class="v" style="color:var(--t2)">${cnt('t2')}</div><div class="l">地煞组</div></div>
+      <div class="stat"><div class="v" style="color:var(--t3)">${cnt('t3')}</div><div class="l">人杰组</div></div>
+      <div class="stat"><div class="v">${ps.filter(p=>!p.group).length}</div><div class="l">待编排</div></div>
+    </div>
+    <div class="card animate-in"><div class="card-trim"></div>`;
+  if(ps.length===0)h+='<p style="text-align:center;color:var(--text2);padding:48px">静候侠客报名……</p>';
+  else{
+    h+=`<div class="tbl-wrap"><table><thead><tr><th>#</th><th>侠客名</th><th>账号</th><th>密码</th><th>论剑分</th><th>胜率</th><th>组别</th><th>项目</th><th>调整分组</th><th>操作</th></tr></thead><tbody>`;
+    sorted.forEach((p,i)=>{
+      const g=p.group||'';
+      const u=D.users.find(x=>x.id===p.id)||{};
+      h+=`<tr><td>${i+1}</td><td><b>${esc(p.name)}</b></td>
+        <td style="font-size:.75em;color:var(--text2)">${esc(u.username||'-')}</td>
+        <td><span style="font-size:.72em;font-family:monospace;background:rgba(0,0,0,.04);padding:2px 6px;border-radius:3px" id="pwdisp_${p.id}">••••••</span>
+        <button class="btn btn-g btn-xs" style="padding:2px 5px;margin-left:3px" onclick="togglePw('${p.id}')" title="显示/隐藏密码">👁</button>
+        <button class="btn btn-o btn-xs" style="padding:2px 5px" onclick="editPw('${p.id}')" title="修改密码">✏️</button></td>
+        <td>${p.score}</td><td>${p.winrate}%</td>
+        <td>${g?`<span class="badge ${TC[g]||'bn'}">${TIERS[g]||'待编排'}</span>`:'<span class="badge bn">待编排</span>'}</td>
+        <td>${p.event==='both'?'个人+3V3':p.event==='individual'?'个人':'3V3'}</td>
+        <td><select onchange="chgGroup('${p.id}',this.value)" style="width:auto;padding:5px 6px;font-size:.72em">
+          <option value="">-- 调整 --</option><option value="t1">天罡组</option><option value="t2">地煞组</option><option value="t3">人杰组</option></select></td>
+        <td><button class="btn btn-e btn-xs" onclick="rmPlayer('${p.id}')">删除</button></td></tr>`;
+    });
+    h+='</tbody></table></div>';
+  }
+  h+=`</div><div class="card"><button class="btn btn-s" onclick="exportCSV()">📥 导出报名表</button>
+    <button class="btn btn-o" onclick="document.getElementById('csvImp').click()" style="margin-left:6px">📤 导入CSV</button>
+    <button class="btn btn-p" onclick="createUserModal()" style="margin-left:6px">➕ 创建用户</button>
+    <input type="file" id="csvImp" accept=".csv" style="display:none" onchange="importCSV(event)"></div>`;
+  return h;
+}
+function chgGroup(pid,g){const p=D.players.find(x=>x.id===pid);if(!p)return;p.group=g||null;saveAll(D);showAP('players');toast('分组已更新');}
+function togglePw(pid){const el=document.getElementById('pwdisp_'+pid);const u=D.users.find(x=>x.id===pid);if(!u||!el)return;if(el.textContent==='••••••'){el.textContent=u.password;el.style.background='rgba(200,50,50,.08)'}else{el.textContent='••••••';el.style.background='rgba(0,0,0,.04)'}}
+function editPw(pid){const u=D.users.find(x=>x.id===pid);if(!u)return;const np=prompt(`修改 ${u.name||u.username} 的密码：`,u.password);if(np===null||!np.trim())return;if(np.trim().length<4){toast('密码至少4位');return}u.password=np.trim();saveAll(D);showAP('players');toast('✅ 密码已更新');}
+function rmPlayer(id){if(!confirm('删除？'))return;D.players=D.players.filter(p=>p.id!==id);D.teams.forEach(t=>t.members=t.members.filter(m=>m!==id));D.teams=D.teams.filter(t=>t.members.length>0);saveAll(D);showAP('players');}
+
+function createUserModal(){
+  const ov=document.createElement('div');ov.className='overlay';
+  ov.innerHTML=`<div class="modal"><h3>➕ 创建用户账号</h3>
+    <div class="form-r"><div class="form-g"><label>用户名 *</label><input id="cuUser"></div>
+    <div class="form-g"><label>密码 *</label><input id="cuPass" type="password"></div></div>
+    <div class="form-g"><label>游戏角色名 *</label><input id="cuName"></div>
+    <div class="form-r"><div class="form-g"><label>论剑分</label><input id="cuScore" type="number" value="0"></div>
+    <div class="form-g"><label>胜率 (%)</label><input id="cuWR" type="number" value="50"></div></div>
+    <div class="form-g"><label>参赛项目</label><select id="cuEvent"><option value="both">个人赛+3V3</option>
+    <option value="individual">仅个人赛</option><option value="team">仅3V3</option></select></div>
+    <div class="form-r"><div class="form-g"><label>联系方式</label><input id="cuContact"></div>
+    <div class="form-g"><label>备注</label><input id="cuNote"></div></div>
+    <button class="btn btn-p" id="cuBtn">创建</button>
+    <button class="btn btn-o" style="margin-left:6px" onclick="this.closest('.overlay').remove()">取消</button></div>`;
+  document.body.appendChild(ov);
+  document.getElementById('cuBtn').onclick=()=>{
+    const u=document.getElementById('cuUser').value.trim(),p=document.getElementById('cuPass').value.trim(),
+      n=document.getElementById('cuName').value.trim();
+    if(!u||!p||!n){toast('请填写必填项');return}
+    if(D.users.find(x=>x.username===u)){toast('用户名已存在');return}
+    const uid='cu_'+Date.now().toString(36);
+    D.users.push({id:uid,username:u,password:p,role:'player',name:n,
+      score:parseInt(document.getElementById('cuScore').value)||0,
+      winrate:parseInt(document.getElementById('cuWR').value)||0,
+      event:document.getElementById('cuEvent').value,
+      contact:document.getElementById('cuContact').value.trim(),
+      note:document.getElementById('cuNote').value.trim(),
+      registeredAt:new Date().toISOString()});
+    D.players.push({id:uid,name:n,score:parseInt(document.getElementById('cuScore').value)||0,
+      winrate:parseInt(document.getElementById('cuWR').value)||0,
+      event:document.getElementById('cuEvent').value,
+      contact:document.getElementById('cuContact').value.trim(),
+      note:document.getElementById('cuNote').value.trim(),group:null,teamId:null});
+    saveAll(D);ov.remove();showAP('players');toast('✅ 用户已创建');
+  };
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove()});
+}
+
+// -- 分组编排 --
+function rGroups(){
+  const indiv=D.players.filter(p=>p.event!=='team');
+  let h=`<div class="tb"><h2>⚖️ 分组编排</h2></div>
+    <div class="card animate-in"><div class="card-trim"></div>
+    <div class="info-box">按 <b>论剑分+胜率</b> 排名分三组。生成赛程时会<b>根据各组人数自适应</b>调整赛制。<br>
+    <span class="badge bt1">天罡组</span> 前1/3 <span class="badge bt2">地煞组</span> 中1/3 <span class="badge bt3">人杰组</span> 后1/3<br>
+    <span style="font-size:.72em;color:var(--text2)">管理员可手动调整任何人的分组，及组内A/B/C/D小组分配</span></div>
+    <button class="btn btn-p" onclick="autoThreeTier()">🔄 自动三组编排</button>
+    <button class="btn btn-s" onclick="genAllSchedules()" style="margin-left:6px">📅 自适应生成赛程</button>
+    <button class="btn btn-o" onclick="showAP('schedule')" style="margin-left:6px">→ 去赛程管理</button>
+    <button class="btn btn-e" onclick="generateTestData()" style="margin-left:6px" title="一键生成20名测试选手+自动编排+自动赛程">🧪 生成测试数据</button></div>`;
+  ['t1','t2','t3'].forEach(tier=>{
+    const ms=indiv.filter(p=>p.group===tier).sort((a,b)=>b.score-a.score||b.winrate-a.winrate);
+    if(ms.length===0)return;
+    h+=`<div class="g-card ${tier}"><div class="g-hd">${TIERS[tier]} · ${ms.length} 人 <span style="font-size:.7em;color:var(--text2)">论剑分排位</span></div>
+      <table><thead><tr><th>#</th><th>侠客名</th><th>论剑分</th><th>胜率</th><th>组内小组</th><th>调整</th></tr></thead><tbody>`;
+    ms.forEach((p,i)=>{
+      const sg=getSubGroup(tier,p.id);
+      h+=`<tr><td>${i+1}</td><td>${esc(p.name)}</td><td>${p.score}</td><td>${p.winrate}%</td>
+        <td><span class="badge bn">${sg||'未分配'}</span></td>
+        <td><select onchange="chgGroup('${p.id}',this.value)" style="width:auto;padding:4px 5px;font-size:.68em">
+        <option value="t1" ${p.group==='t1'?'selected':''}>天罡</option>
+        <option value="t2" ${p.group==='t2'?'selected':''}>地煞</option>
+        <option value="t3" ${p.group==='t3'?'selected':''}>人杰</option>
+        <option value="">移除</option></select></td></tr>`;
+    });
+    h+='</tbody></table></div>';
+  });
+  const un=indiv.filter(p=>!p.group);
+  if(un.length>0){
+    h+=`<div class="g-card"><div class="g-hd">待编排 · ${un.length} 人</div>
+      <table><thead><tr><th>侠客名</th><th>论剑分</th><th>胜率</th></tr></thead><tbody>`;
+    un.forEach(p=>h+=`<tr><td>${esc(p.name)}</td><td>${p.score}</td><td>${p.winrate}%</td></tr>`);
+    h+='</tbody></table></div>';
+  }
+  return h;
+}
+function getSubGroup(tier,pid){const m=D.matches[tier];if(!m||!m.groups)return null;for(const[gn,g]of Object.entries(m.groups)){if(g.players.includes(pid))return gn+'组';}return null;}
+function autoThreeTier(){
+  const indiv=D.players.filter(p=>p.event!=='team');
+  if(indiv.length<3){toast('至少需要3名选手');return}
+  const sorted=[...indiv].sort((a,b)=>b.score-a.score||b.winrate-a.winrate);
+  const n=sorted.length,s1=Math.floor(n/3),s2=Math.floor(n*2/3);
+  sorted.forEach((p,i)=>{if(i<s1)p.group='t1';else if(i<s2)p.group='t2';else p.group='t3';});
+  saveAll(D);showAP('groups');
+  toast(`已编排：天罡${s1}·地煞${s2-s1}·人杰${n-s2}`);
+}
+
+// -- 自适应赛程生成 --
+function adaptiveSchedule(players){
+  const n=players.length;const arr=[...players].sort(()=>Math.random()-.5);
+  if(n<3)return null;
+  let numGroups,advPerGroup,knockout;
+  // 智能赛制：根据人数自适应
+  if(n<=4){numGroups=1;advPerGroup=1;knockout='direct';}         // ≤4人: 1组循环,冠军直出
+  else if(n<=6){numGroups=1;advPerGroup=2;knockout='semifinal';}  // 5-6人: 1组前2→决赛
+  else if(n<=8){numGroups=2;advPerGroup=1;knockout='semifinal';}  // 7-8人: 2组各第1→决赛
+  else if(n<=11){numGroups=4;advPerGroup=1;knockout='semifinal';} // 9-11人: 4组各第1→半决赛(4强)
+  else if(n<=13){numGroups=2;advPerGroup=2;knockout='semifinal';} // 12-13人: 2组各前2→半决赛(4强)
+  else{numGroups=4;advPerGroup=2;knockout='quarter';}             // ≥14人: 4组各前2→¼决赛(8强)
+  numGroups=Math.min(numGroups,n);if(numGroups<1)numGroups=1;
+
+  const groups={};for(let i=0;i<numGroups;i++)groups[String.fromCharCode(65+i)]={players:[],matches:[]};
+  arr.forEach((p,i)=>groups[String.fromCharCode(65+(i%numGroups))].players.push(p.id));
+  const today=new Date();const dates=[];const hours=['14:00','15:30','16:00','17:30','19:00','20:00','20:30'];
+  for(let i=0;i<8;i++){const d=new Date(today);d.setDate(d.getDate()+i);dates.push((d.getMonth()+1)+'月'+d.getDate()+'日 '+hours[i%hours.length]);}
+
+  Object.values(groups).forEach((g,gi)=>{
+    const ids=g.players;
+    for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++)
+      g.matches.push({id:'g_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+        p1:ids[i],p2:ids[j],s1:null,s2:null,winner:null,bo:3,date:dates[gi]||dates[0]});
+  });
+
+  if(knockout==='direct'){
+    knockout=[];
+  }else if(knockout==='semifinal'){
+    // semis needed when >1 group OR when single group sends top 2 to a final
+    const needSemis=numGroups>2||(numGroups===2&&advPerGroup===2);
+    if(!needSemis&&numGroups<=2&&advPerGroup===1){
+      // 2 groups → winners play final directly
+      knockout=[
+        {id:'ko_fin',r:'final',bo:7,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-1],label:'决赛'},
+      ];
+    }else{
+      // 4 groups OR 2 groups top2 → semifinals + final + 3rd place
+      knockout=[
+        {id:'ko_sf1',r:'semifinal',bo:5,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-2],label:'半决赛1'},
+        {id:'ko_sf2',r:'semifinal',bo:5,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-2],label:'半决赛2'},
+        {id:'ko_3rd',r:'third',bo:5,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-1],label:'季军赛'},
+        {id:'ko_fin',r:'final',bo:7,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-1],label:'决赛'},
+      ];
+    }
+  }else{// quarter: 4组各前2→¼决赛(8强)
+    knockout=[
+      {id:'ko_qf1',r:'quarter',bo:5,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-4],label:'¼决赛1'},
+      {id:'ko_qf2',r:'quarter',bo:5,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-4],label:'¼决赛2'},
+      {id:'ko_qf3',r:'quarter',bo:5,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-4],label:'¼决赛3'},
+      {id:'ko_qf4',r:'quarter',bo:5,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-4],label:'¼决赛4'},
+      {id:'ko_sf1',r:'semifinal',bo:5,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-2],label:'半决赛1'},
+      {id:'ko_sf2',r:'semifinal',bo:5,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-2],label:'半决赛2'},
+      {id:'ko_3rd',r:'third',bo:5,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-1],label:'季军赛'},
+      {id:'ko_fin',r:'final',bo:7,p1:null,p2:null,s1:null,s2:null,winner:null,date:dates[dates.length-1],label:'决赛'},
+    ];
+  }
+  return{groups,knockout,format:knockout,numGroups,advPerGroup,groupConfirmed:false};
+}
+
+function genAllSchedules(){
+  let ok=0;
+  ['t1','t2','t3'].forEach(tier=>{
+    const ps=D.players.filter(p=>p.group===tier&&p.event!=='team');
+    if(ps.length>=3){const r=adaptiveSchedule(ps);if(r){D.matches[tier]=r;ok++}}
+  });
+  if(ok===0){toast('每组至少需要3人');return}
+  saveAll(D);showAP('schedule');toast(`${ok}组赛程已自适应生成`);
+}
+
+// -- 赛程管理 --
+let schedTier='t1';
+function rSchedule(){
+  let h=`<div class="tb"><h2>📅 赛程管理</h2><div class="tier-tabs">`;
+  ['t1','t2','t3','team'].forEach(t=>{
+    const lb={t1:'🥇 天罡组',t2:'🥈 地煞组',t3:'🥉 人杰组',team:'🤝 3V3'};
+    h+=`<button class="tier-tab tier-${t} ${schedTier===t?'on':''}" onclick="schedTier='${t}';showAP('schedule')">${lb[t]}</button>`;
+  });h+=`</div></div>`;
+  if(schedTier==='team'){h+=rTeamSchedule();return h}
+  const m=D.matches[schedTier];const lb=TIERS[schedTier];
+  if(!m.groups||Object.keys(m.groups).length===0){
+    h+='<div class="card"><p style="text-align:center;color:var(--text2);padding:48px">赛程尚未生成</p></div>';return h
+  }
+  h+=`<div class="card animate-in"><div class="card-trim"></div><h2>小组赛 · ${lb} (BO3) · 赛制: ${fmtFormat(m)}</h2><div class="info-box">每赢<b>1小局</b>积<b>1分</b>（例BO3打2:1→胜者+2分，败者+1分）。管理员可调整小组分配和日期。</div><div class="g-grid">`;
+  Object.entries(m.groups).forEach(([gn,g])=>{
+    const st=calcSt(gn,g,schedTier);
+    h+=`<div class="g-card ${schedTier}"><div class="g-hd">${gn}组 → ${st[0]?esc(st[0].name):'?'}晋级 <span style="font-size:.65em;color:var(--text2)">(${g.players.length}人)</span></div>
+      <table><thead><tr><th>侠客</th><th>分</th><th>胜</th><th>负</th><th>积分</th><th>移组</th></tr></thead><tbody>`;
+    st.forEach(s=>h+=`<tr class="${s.rank<=getAdvCount(m)?'q':''}"><td>${esc(s.name)}</td><td>${s.score}</td><td>${s.wins}</td><td>${s.losses}</td><td><b>${s.points}</b></td><td><select onchange="moveSubGroup('${schedTier}','${gn}','${s.id}')" style="width:auto;padding:3px 4px;font-size:.65em"><option value="">移组</option>${Object.keys(m.groups).filter(x=>x!==gn).map(x=>`<option value="${x}">→${x}组</option>`).join('')}</select></td></tr>`);
+    h+=`</tbody></table>`;
+    g.matches.forEach(mt=>{const p1=D.players.find(x=>x.id===mt.p1),p2=D.players.find(x=>x.id===mt.p2);h+=mRow(mt,p1,p2,schedTier);});
+    const gd=g.matches[0]?g.matches[0].date:'';
+    h+=`<div style="padding:6px 12px;font-size:.7em;color:var(--text2)">📅 <input class="date-inp" value="${gd}" onchange="setGroupDate('${schedTier}','${gn}',this.value)" placeholder="如:7月25日"> <span style="font-size:.65em">(小组比赛日)</span></div></div>`;
+  });
+  h+=`</div></div>`;
+  // 确认+淘汰赛区域
+  h+=`<div class="card animate-in"><div class="card-trim"></div>`;
+  if(!m.groupConfirmed){
+    h+=`<div class="info-box">⚠️ 小组赛尚未锁定。录入比分后点击下方按钮，系统将根据积分排名自动生成淘汰赛对阵。</div>
+      <button class="btn btn-p btn-glow" onclick="confirmGroupStage('${schedTier}')">🔒 锁定小组赛并生成淘汰赛</button>`;
+  }else{
+    h+=`<span class="badge bt1" style="margin-bottom:8px;font-size:.78em">✅ 小组赛已锁定 · 淘汰赛已生成</span>
+      <button class="btn btn-o btn-xs" style="margin-left:8px" onclick="unlockGroupStage('${schedTier}')">🔓 解锁</button>
+      <button class="btn btn-s btn-xs" style="margin-left:4px" onclick="forceAdvanceKnockout('${schedTier}')">🔄 重新推进</button>`;
+    if(m.knockout.length>0){
+      h+=`<h2 style="margin-top:16px">🏆 淘汰赛 (BO5 · 决赛BO7)</h2>
+        <div class="info-box" style="font-size:.7em">💡 <b>提示：</b>可直接在下拉框调整淘汰赛选手；输入比分后系统自动推进胜者到下一轮。</div>`;
+      m.knockout.forEach(ko=>h+=koRow(ko,schedTier));
+    }
+  }
+  h+=`</div>`;
+  return h;
+}
+
+function confirmGroupStage(tier){
+  const m=D.matches[tier];if(!m||!m.groups){toast('无赛程数据');return}
+  m.groupConfirmed=true;
+  advKnock(tier); // populate knockout
+  saveAll(D);showAP('schedule');toast('✅ 小组赛已锁定，淘汰赛对阵已生成');
+}
+function unlockGroupStage(tier){
+  if(!confirm('解锁后将清空淘汰赛比分和晋级信息，确定吗？'))return;
+  const m=D.matches[tier];if(!m)return;
+  m.groupConfirmed=false;
+  // Reset all knockout matches
+  m.knockout.forEach(k=>{k.p1=null;k.p2=null;k.s1=null;k.s2=null;k.winner=null});
+  saveAll(D);showAP('schedule');toast('🔓 已解锁');
+}
+function forceAdvanceKnockout(tier){
+  const m=D.matches[tier];if(!m||!m.groups)return;
+  advKnock(tier);saveAll(D);showAP('schedule');toast('🔄 淘汰赛已重新推进');
+}
+function fmtFormat(m){if(!m)return'未知';const f=m.format;const ap=m.advPerGroup||(f==='quarter'?2:1);if(f==='direct')return'单组循环，第1名夺冠';if(f==='semifinal')return`${m.numGroups||'?'}组→各组前${ap}晋级→${ap*m.numGroups}强→半决赛`;return`${m.numGroups||4}组→各组前${ap}晋级→${ap*m.numGroups}强→¼决赛→半决赛`;}
+function getAdvCount(m){if(!m)return 1;const ap=m.advPerGroup||(m.format==='quarter'?2:1);return ap;}
+function setGroupDate(tier,gn,date){const m=D.matches[tier];if(!m||!m.groups)return;const g=m.groups[gn];if(!g)return;g.matches.forEach(mt=>mt.date=date);saveAll(D);toast('日期已更新');}
+
+function calcSt(gn,g,tier){
+  const ids=g.players;const st={};ids.forEach(id=>{st[id]={id,wins:0,losses:0,points:0}});
+  g.matches.forEach(m=>{
+    // 每赢一小局加1分（小分制）
+    if(m.s1!==null&&m.s2!==null){
+      if(st[m.p1])st[m.p1].points+=(m.s1||0);
+      if(st[m.p2])st[m.p2].points+=(m.s2||0);
+    }
+    // 比赛胜负统计（大分）
+    if(m.winner&&st[m.winner]){st[m.winner].wins++;}
+    const l=m.p1===m.winner?m.p2:m.p1;
+    if(m.winner&&l&&st[l])st[l].losses++;
+  });
+  return ids.map(id=>{const p=D.players.find(x=>x.id===id)||{};return{...st[id],name:p.name||'?',score:p.score||0}}).sort((a,b)=>b.points-a.points||b.wins-a.wins||a.losses-b.losses).map((s,i)=>{s.rank=i+1;return s});
+}
+function moveSubGroup(tier,fromGn,pid){
+  const tg=document.querySelector(`[onchange="moveSubGroup('${tier}','${fromGn}','${pid}')"]`);if(!tg)return;
+  const toGn=tg.value;if(!toGn)return;const m=D.matches[tier];if(!m||!m.groups)return;
+  const fg=m.groups[fromGn],tg2=m.groups[toGn];if(!fg||!tg2)return;
+  fg.players=fg.players.filter(x=>x!==pid);
+  fg.matches=fg.matches.filter(x=>x.p1!==pid&&x.p2!==pid);
+  tg2.players.push(pid);
+  const oldM=tg2.matches.filter(x=>x.p1!==pid&&x.p2!==pid);
+  const newM=[];tg2.players.forEach(q=>{if(q!==pid)newM.push({id:'g_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),p1:pid,p2:q,s1:null,s2:null,winner:null,bo:3,date:tg2.matches[0]?tg2.matches[0].date:''})});
+  tg2.matches=[...oldM,...newM];
+  m.groupConfirmed=false;
+  saveAll(D);showAP('schedule');toast(`已移至${toGn}组，赛程已同步更新`);
+}
+
+// Build player options dropdown for knockout participant selection
+function koPlayerSelect(tier,koId,slot){
+  const m=D.matches[tier];if(!m||!m.groups)return'';
+  // Gather all players in this tier's groups
+  const allP=[];const seen=new Set();
+  Object.entries(m.groups).forEach(([gn,g])=>{
+    g.players.forEach(pid=>{if(!seen.has(pid)){seen.add(pid);const p=D.players.find(x=>x.id===pid);if(p)allP.push(p);}});
+  });
+  allP.sort((a,b)=>b.score-a.score);
+  let s=`<select class="ko-select" onchange="setKoPlayer('${tier}','${koId}','${slot}',this.value)" title="选择选手"><option value="">--待定--</option>`;
+  allP.forEach(p=>{s+=`<option value="${p.id}">${esc(p.name)} (${p.score})</option>`;});
+  s+=`</select>`;
+  return s;
+}
+function setKoPlayer(tier,koId,slot,pid){
+  const m=D.matches[tier];if(!m)return;
+  const ko=m.knockout.find(k=>k.id===koId);if(!ko)return;
+  if(slot==='p1')ko.p1=pid||null;else ko.p2=pid||null;
+  // Reset winner if participants changed
+  if(ko.winner&&ko.winner!==ko.p1&&ko.winner!==ko.p2)ko.winner=null;
+  saveAll(D);showAP('schedule');toast('✅ 已更新');
+}
+
+function mRow(m,p1,p2,tier){
+  if(!p1||!p2)return'';
+  const w=m.winner?`→ ${esc((D.players.find(x=>x.id===m.winner)||{}).name||'?')} 胜`:'';
+  return`<div class="m-row"><span style="flex:1;text-align:right;font-size:.92em">${esc(p1.name)}</span>
+    <input value="${fmt(m.s1)}" onchange="upM('${tier}','${m.id}','s1',this.value)">
+    <span class="vs">:</span>
+    <input value="${fmt(m.s2)}" onchange="upM('${tier}','${m.id}','s2',this.value)">
+    <span style="flex:1;font-size:.92em">${esc(p2.name)}</span>
+    <span style="font-size:.65em;color:var(--text2)">BO${m.bo}</span>
+    <span style="font-size:.68em;color:var(--pri)">${w}</span>
+    <input class="date-inp" value="${m.date||''}" onchange="upMDate('${tier}','${m.id}',this.value)" title="比赛日期">
+    <button class="btn btn-g btn-xs" onclick="rstM('${tier}','${m.id}')">重置</button></div>`;
+}
+function koRow(ko,tier){
+  const p1=D.players.find(x=>x.id===ko.p1),p2=D.players.find(x=>x.id===ko.p2);
+  const rn={quarter:'¼决赛',semifinal:'半决赛',third:'季军赛',final:'🏆 决赛'}[ko.r]||ko.r;
+  const w=ko.winner?`→ ${esc((D.players.find(x=>x.id===ko.winner)||{}).name||'?')} 胜`:'';
+  // Build select dropdowns for knockout participants (only show if group stage is confirmed)
+  const selP1=koPlayerSelect(tier,ko.id,'p1');
+  const selP2=koPlayerSelect(tier,ko.id,'p2');
+  return`<div class="m-row" style="border-left:2px solid var(--pri);margin-bottom:4px;padding:8px 12px">
+    <b style="min-width:50px;color:var(--pri);font-size:.7em">${rn}</b>
+    <span style="flex:1;text-align:right">${p1?esc(p1.name):'<i style="color:var(--text2)">待定</i>'}</span>
+    <span style="font-size:.6em;color:var(--text2);min-width:40px;text-align:center">${selP1}</span>
+    <input value="${fmt(ko.s1)}" onchange="upK('${tier}','${ko.id}','s1',this.value)" style="width:36px">
+    <span class="vs">:</span>
+    <input value="${fmt(ko.s2)}" onchange="upK('${tier}','${ko.id}','s2',this.value)" style="width:36px">
+    <span style="font-size:.6em;color:var(--text2);min-width:40px;text-align:center">${selP2}</span>
+    <span style="flex:1">${p2?esc(p2.name):'<i style="color:var(--text2)">待定</i>'}</span>
+    <span style="font-size:.65em;color:var(--text2)">BO${ko.bo}</span>
+    <span style="font-size:.68em;color:var(--pri)">${w}</span>
+    <input class="date-inp" value="${ko.date||''}" onchange="upKDate('${tier}','${ko.id}',this.value)" title="比赛日期">
+    <button class="btn btn-g btn-xs" onclick="rstK('${tier}','${ko.id}')">重置</button></div>`;
+}
+
+// -- 晋级图 --
+let brackTier='t1';
+function rBracket(){
+  let h=`<div class="tb"><h2>🏆 晋级图</h2><div class="tier-tabs">`;
+  ['t1','t2','t3','team'].forEach(t=>{const lb={t1:'🥇 天罡组',t2:'🥈 地煞组',t3:'🥉 人杰组',team:'🤝 3V3'};h+=`<button class="tier-tab tier-${t} ${brackTier===t?'on':''}" onclick="brackTier='${t}';showAP('bracket')">${lb[t]}</button>`;});h+=`</div></div>`;
+  if(brackTier==='team'){h+=rTeamBracketView();return h}
+  const m=D.matches[brackTier];const lb=TIERS[brackTier];
+  if(!m.groups||Object.keys(m.groups).length===0){h+='<div class="card"><p style="text-align:center;color:var(--text2);padding:48px">暂无数据</p></div>';return h}
+  h+=`<div class="g-grid" style="margin-bottom:12px">`;
+  Object.entries(m.groups).forEach(([gn,g])=>{
+    const st=calcSt(gn,g,brackTier);
+    h+=`<div class="g-card ${brackTier}"><div class="g-hd">${gn}组</div><table><thead><tr><th>侠客</th><th>积分</th><th>胜/负</th></tr></thead><tbody>`;
+    st.forEach(s=>h+=`<tr class="${s.rank<=getAdvCount(m)?'q':''}"><td>${esc(s.name)}</td><td>${s.points}</td><td>${s.wins}/${s.losses}</td></tr>`);
+    h+=`</tbody></table></div>`;
+  });h+=`</div>`;
+  if(!m.groupConfirmed){
+    h+=`<div class="card animate-in"><div class="card-trim"></div><p style="text-align:center;color:var(--text2);padding:32px">🔒 小组赛尚未锁定<br><span style="font-size:.75em">请管理员在"赛程管理"中录入比分后点击"锁定小组赛"</span></p></div>`;
+  }else if(m.knockout.length>0){
+    const sf1=m.knockout.find(k=>k.r==='semifinal'&&k.label.includes('半决赛1'));
+    const sf2=m.knockout.find(k=>k.r==='semifinal'&&k.label.includes('半决赛2'));
+    const tp=m.knockout.find(k=>k.r==='third'),fin=m.knockout.find(k=>k.r==='final');
+    const qf=m.knockout.filter(k=>k.r==='quarter');h+=bkDOM(m,sf1,sf2,fin,tp,qf,lb);
+  }else{
+    h+=`<div class="card animate-in"><h2>🏆 ${lb} · 冠军</h2><p style="font-size:1.3em;text-align:center;color:var(--pri);padding:20px">${(()=>{const allSt=[];Object.entries(m.groups).forEach(([gn,g])=>{const st=calcSt(gn,g,brackTier);allSt.push(...st);});allSt.sort((a,b)=>b.points-a.points||b.wins-a.wins);return allSt[0]?esc(allSt[0].name):'待定';})()}</p></div>`;
+  }
+  return h;
+}
+function bkDOM(m,sf1,sf2,fin,tp,qf,lb){
+  const pn=(pid)=>{if(!pid)return'<span style="color:var(--text2)">待定</span>';const p=D.players.find(x=>x.id===pid);return esc((p||{}).name||'?')};
+  const mb=(mt,rl,bo)=>{
+    const p1=mt?mt.p1:null,p2=mt?mt.p2:null,w=mt?mt.winner:null,
+      s1=mt&&mt.s1!==null?mt.s1:'-',s2=mt&&mt.s2!==null?mt.s2:'-';
+    return`<div class="bk-m${w?' won':''}"><div class="rd">${rl} · BO${bo}</div>
+      <div class="p1${w===p1?' w':''}">${pn(p1)}</div>
+      <div class="sc">${s1}:${s2}</div>
+      <div class="p2${w===p2?' w':''}">${pn(p2)}</div></div>`;
+  };
+  const champ=fin&&fin.winner?pn(fin.winner):'待定';
+  let runner='待定';if(fin&&fin.winner&&fin.p1&&fin.p2)runner=pn(fin.winner===fin.p1?fin.p2:fin.p1);
+  let h='<div class="card animate-in"><div class="card-trim"></div><h2>🏆 '+lb+' · 淘汰赛</h2><div class="bk-wrap"><div class="bk-row">';
+  if(qf.length>0){h+=`<div class="bk-col"><div class="bk-ttl">¼决赛 (BO5)</div>`;qf.forEach(q=>h+=mb(q,'¼决赛',5));h+=`</div><div class="bk-arr">▶</div>`;}
+  h+=`<div class="bk-col"><div class="bk-ttl">半决赛 (BO5)</div>`;
+  if(sf1)h+=mb(sf1,'半决赛1',5);h+=`<div style="height:16px"></div>`;
+  if(sf2)h+=mb(sf2,'半决赛2',5);h+=`</div><div class="bk-arr">▶</div>
+    <div class="bk-col"><div class="bk-ttl">决赛 (BO7)</div>${mb(fin,'决赛',7)}</div>`;
+  if(tp){h+=`<div class="bk-arr">▶</div><div class="bk-col"><div class="bk-ttl">季军赛 (BO5)</div>${mb(tp,'季军赛',5)}</div>`;}
+  h+=`<div class="rs-card"><div>🥇 <b>冠军</b>: ${champ}</div><div>🥈 <b>亚军</b>: ${runner}</div><div>🥉 <b>季军</b>: ${tp&&tp.winner?pn(tp.winner):'待定'}</div></div></div></div></div>`;
+  return h;
+}
+
+// -- 3V3 --
+function rTeams(){
+  const avail=D.players.filter(p=>p.event!=='individual'&&!p.teamId);
+  let h=`<div class="tb"><h2>🤝 3V3 组队</h2><span style="color:var(--text2)">${avail.length}人待组队</span></div>
+    <div class="card animate-in"><div class="card-trim"></div>
+    <div class="info-box">⚖️ <b>自适应平衡组队</b>：优先跨组搭配（天罡+地煞+人杰各1），人数不均衡时自动补充最佳人选。<br>
+    <span style="font-size:.75em">每组人数可2~4人弹性调整，尽量保证各队总战力接近。管理员可随时调整队员、队名。</span></div>
+    <button class="btn btn-p" onclick="autoTeams()">🔄 智能平衡组队</button>
+    <button class="btn btn-o" onclick="manualTeam()" style="margin-left:6px">✏️ 手动创建队伍</button></div>`;
+  if(D.teams.length>0){
+    h+=`<div class="g-grid">`;
+    D.teams.forEach(t=>{
+      const ms=t.members.map(mid=>D.players.find(p=>p.id===mid)).filter(Boolean);
+      const totalScore=ms.reduce((s,m)=>s+(m.score||0),0);
+      const tiers=ms.map(m=>m.group==='t1'?'🟡天罡':m.group==='t2'?'🟠地煞':'🟢人杰');
+      h+=`<div class="g-card"><div class="g-hd">🏴 <span class="team-name-display" id="tnd_${t.id}">${esc(t.name)}</span>
+        <span style="font-size:.65em;color:var(--text2)">均分${ms.length?Math.round(totalScore/ms.length):0}</span></div>
+        <div style="padding:6px 14px;font-size:.76em">${ms.map((m,i)=>`<div>${tiers[i]||'⚪'} ${esc(m.name)} (${m.score}) <button class="btn btn-g btn-xs" style="padding:1px 5px;margin-left:4px" onclick="rmMember('${t.id}','${m.id}')" title="移除">✕</button></div>`).join('')}</div>
+        <div style="padding:4px 14px;display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-o btn-xs" onclick="renameTeam('${t.id}')">✏️ 改名</button>
+          <button class="btn btn-o btn-xs" onclick="addMember('${t.id}')">➕ 加人</button>
+          <button class="btn btn-e btn-xs" onclick="disband('${t.id}')">解散</button>
+        </div></div>`;
+    });h+=`</div>`;
+  }
+  const canGenSched=D.teams.length>=3;
+  h+=`<div class="card"><div class="card-trim"></div>
+    <button class="btn btn-s btn-glow" ${canGenSched?'':'disabled style="opacity:.4;cursor:not-allowed"'}
+    onclick="${canGenSched?"genTeamSched();saveAll(D);showAP('schedule');schedTier='team';toast('✅ 3V3赛程已生成')":''}"
+    title="${canGenSched?'自动生成3V3小组赛+淘汰赛':'至少需要3支队伍才能生成赛程'}">📅 自动生成3V3赛程</button>
+    <span style="font-size:.7em;color:var(--text2);margin-left:8px">${canGenSched?`当前${D.teams.length}支队伍，可生成赛程`:'至少需要3支队伍'}</span>
+    ${D.teamM.groups&&Object.keys(D.teamM.groups).length>0?`<button class="btn btn-o" style="margin-left:6px" onclick="schedTier='team';showAP('schedule')">→ 查看3V3赛程</button>`:''}
+  </div>`;
+  return h;
+}
+function autoTeams(){
+  const avail=D.players.filter(p=>p.event!=='individual'&&!p.teamId);
+  if(avail.length<2){toast('至少需要2名可组队选手');return}
+  // 分组池
+  const pool={t1:avail.filter(p=>p.group==='t1'),t2:avail.filter(p=>p.group==='t2'),t3:avail.filter(p=>p.group==='t3')};
+  // 按总分排序
+  Object.values(pool).forEach(a=>a.sort((a,b)=>b.score-a.score));
+  const totalAvail=avail.length;
+  const teamSize=totalAvail<=6?2:totalAvail<=9?3:Math.min(4,Math.ceil(totalAvail/3));
+  const numTeams=Math.max(2,Math.floor(totalAvail/teamSize));
+  D.teams=[];
+  // 先跨组搭配：每个队伍尽量从不同组取人
+  const used=new Set();
+  for(let i=0;i<numTeams;i++){
+    const members=[];
+    // 轮流从t1,t2,t3取人
+    ['t1','t2','t3'].forEach(tier=>{
+      const p=pool[tier].find(p=>!used.has(p.id));
+      if(p){members.push(p.id);used.add(p.id)}
+    });
+    if(members.length>=2){
+      const tid='t_'+Date.now().toString(36)+i;
+      D.teams.push({id:tid,name:'战队'+(i+1),members});
+      members.forEach(mid=>{const p=D.players.find(x=>x.id===mid);if(p)p.teamId=tid});
+    }
+  }
+  // 剩余未分配的加入已有队伍（平衡分数）
+  const leftovers=avail.filter(p=>!used.has(p.id));
+  leftovers.forEach(p=>{
+    // 找到总分最低的队伍加入
+    let minTeam=null,minScore=Infinity;
+    D.teams.forEach(t=>{
+      const ms=t.members.map(mid=>D.players.find(x=>x.id===mid)).filter(Boolean);
+      const ts=ms.reduce((s,m)=>s+(m.score||0),0);
+      if(ts<minScore){minScore=ts;minTeam=t}
+    });
+    if(minTeam){minTeam.members.push(p.id);p.teamId=minTeam.id}
+  });
+  if(D.teams.length<2){toast('组队失败，请手动创建');return}
+  saveAll(D);showAP('teams');toast(`✅ 已生成${D.teams.length}支队伍（每队${teamSize}人左右）`);
+}
+function genTeamSched(){
+  if(D.teams.length<3)return;const ng=Math.min(2,Math.ceil(D.teams.length/3));
+  const gs={};for(let i=0;i<ng;i++)gs[String.fromCharCode(65+i)]={teamIds:[],matches:[]};
+  [...D.teams].sort(()=>Math.random()-.5).forEach((t,i)=>gs[String.fromCharCode(65+(i%ng))].teamIds.push(t.id));
+  const today=new Date();const hh=['14:00','15:30','16:00','17:30','19:00','20:00','20:30'];
+  const dd=(i)=>{const d=new Date(today);d.setDate(d.getDate()+i);return(d.getMonth()+1)+'月'+d.getDate()+'日 '+hh[i]||'14:00';};
+  Object.values(gs).forEach((g,gi)=>{for(let i=0;i<g.teamIds.length;i++)for(let j=i+1;j<g.teamIds.length;j++)g.matches.push({id:'tm_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),t1:g.teamIds[i],t2:g.teamIds[j],s1:null,s2:null,winner:null,bo:3,date:dd(gi)});});
+  D.teamM={groups:gs,knockout:[{id:'tko_sf1',r:'semifinal',bo:5,t1:null,t2:null,s1:null,s2:null,winner:null,date:dd(5),label:'A1 vs B2'},{id:'tko_sf2',r:'semifinal',bo:5,t1:null,t2:null,s1:null,s2:null,winner:null,date:dd(5),label:'B1 vs A2'},{id:'tko_3rd',r:'third',bo:5,t1:null,t2:null,s1:null,s2:null,winner:null,date:dd(6),label:'季军赛'},{id:'tko_fin',r:'final',bo:7,t1:null,t2:null,s1:null,s2:null,winner:null,date:dd(6),label:'决赛'},]};
+}
+function renameTeam(tid){
+  const t=D.teams.find(x=>x.id===tid);if(!t)return;
+  const nm=prompt('请输入新队名：',t.name);if(!nm||!nm.trim())return;
+  t.name=nm.trim();saveAll(D);showAP('teams');toast('✅ 队名已更新');
+}
+function addMember(tid){
+  const t=D.teams.find(x=>x.id===tid);if(!t)return;
+  const avail=D.players.filter(p=>p.event!=='individual'&&!p.teamId);
+  if(!avail.length){toast('没有可加入的选手');return}
+  const opt=avail.map(p=>`<option value="${p.id}">${esc(p.name)} (${p.score}) - ${(p.group==='t1'?'天罡':p.group==='t2'?'地煞':'人杰')}</option>`).join('');
+  const ov=document.createElement('div');ov.className='overlay';
+  ov.innerHTML=`<div class="modal"><h3>➕ 为 ${esc(t.name)} 添加队员</h3>
+    <div class="form-g"><label>选择选手</label><select id="amSel">${opt}</select></div>
+    <button class="btn btn-p" id="amBtn">添加</button>
+    <button class="btn btn-o" style="margin-left:6px" onclick="this.closest('.overlay').remove()">取消</button></div>`;
+  document.body.appendChild(ov);
+  document.getElementById('amBtn').onclick=()=>{
+    const pid=document.getElementById('amSel').value;if(!pid)return;
+    t.members.push(pid);const p=D.players.find(x=>x.id===pid);if(p)p.teamId=tid;
+    saveAll(D);ov.remove();showAP('teams');toast('✅ 已添加');
+  };ov.addEventListener('click',e=>{if(e.target===ov)ov.remove()});
+}
+function rmMember(tid,pid){
+  const t=D.teams.find(x=>x.id===tid);if(!t)return;
+  if(t.members.length<=2){toast('队伍至少需要2人');return}
+  t.members=t.members.filter(m=>m!==pid);
+  const p=D.players.find(x=>x.id===pid);if(p)p.teamId=null;
+  if(t.members.length===0)D.teams=D.teams.filter(x=>x.id!==tid);
+  saveAll(D);showAP('teams');toast('✅ 已移除');
+}
+function manualTeam(){
+  const avail=D.players.filter(p=>p.event!=='individual'&&!p.teamId);
+  if(avail.length<2){toast('至少需要2名可组队选手');return}
+  const opt=avail.map(p=>`<option value="${p.id}">${esc(p.name)} (${p.score}) - ${(p.group==='t1'?'天罡':p.group==='t2'?'地煞':'人杰')}</option>`).join('');
+  const ov=document.createElement('div');ov.className='overlay';
+  ov.innerHTML=`<div class="modal"><h3>✏️ 手动创建队伍</h3>
+    <div class="form-g"><label>队名</label><input id="mtn" value="战队${D.teams.length+1}" placeholder="输入队名"></div>
+    <div class="info-box" style="font-size:.7em">💡 可跨组选择，建议2~4人。按住Ctrl可多选。</div>
+    <div class="form-g"><label>选择队员（可多选，2~4人）</label><select id="mtSel" multiple style="min-height:200px">${opt}</select></div>
+    <button class="btn btn-p" id="mtb">创建</button>
+    <button class="btn btn-o" style="margin-left:6px" onclick="this.closest('.overlay').remove()">取消</button></div>`;
+  document.body.appendChild(ov);
+  document.getElementById('mtb').onclick=()=>{
+    const nm=document.getElementById('mtn').value.trim();
+    const sel=Array.from(document.getElementById('mtSel').selectedOptions).map(o=>o.value);
+    if(!nm){toast('请输入队名');return}
+    if(sel.length<2){toast('至少选择2名队员');return}
+    if(sel.length>4){toast('最多4名队员');return}
+    const tid='t_'+Date.now().toString(36);D.teams.push({id:tid,name:nm,members:sel});
+    sel.forEach(pid=>{const p=D.players.find(x=>x.id===pid);if(p)p.teamId=tid});
+    saveAll(D);ov.remove();showAP('teams');toast('✅ 队伍已创建');
+  };ov.addEventListener('click',e=>{if(e.target===ov)ov.remove()});
+}
+function disband(id){if(!confirm('确定解散此队伍？队员将恢复未组队状态。'))return;D.players.forEach(p=>{if(p.teamId===id)p.teamId=null});D.teams=D.teams.filter(t=>t.id!==id);saveAll(D);showAP('teams');toast('已解散');}
+function rTeamSchedule(){
+  if(!D.teamM.groups||Object.keys(D.teamM.groups).length===0)return'<div class="card"><p style="text-align:center;color:var(--text2);padding:48px">暂无3V3赛程</p></div>';
+  let h='<div class="g-grid">';Object.entries(D.teamM.groups).forEach(([gn,g])=>{
+    const st=calcTSt(gn,g);h+=`<div class="g-card"><div class="g-hd">${gn}组 · 晋级前2</div><table><thead><tr><th>队伍</th><th>胜</th><th>负</th><th>积分</th></tr></thead><tbody>`;
+    st.forEach(s=>h+=`<tr class="${s.rank<=2?'q':''}"><td>${esc(s.name)}</td><td>${s.wins}</td><td>${s.losses}</td><td><b>${s.points}</b></td></tr>`);
+    h+=`</tbody></table>`;g.matches.forEach(mt=>{const t1=D.teams.find(x=>x.id===mt.t1),t2=D.teams.find(x=>x.id===mt.t2);h+=tMrow(mt,t1,t2);});h+=`</div>`;
+  });h+=`</div><div class="card"><h2>淘汰赛</h2>`;D.teamM.knockout.forEach(ko=>h+=tKorow(ko));h+=`</div>`;return h;
+}
+function calcTSt(gn,g){const ids=g.teamIds;const st={};ids.forEach(id=>{st[id]={id,wins:0,losses:0,points:0}});g.matches.forEach(m=>{if(m.s1!==null&&m.s2!==null){if(st[m.t1])st[m.t1].points+=(m.s1||0);if(st[m.t2])st[m.t2].points+=(m.s2||0);}if(m.winner&&st[m.winner]){st[m.winner].wins++;const l=m.t1===m.winner?m.t2:m.t1;if(st[l])st[l].losses++;}});return ids.map(id=>{const t=D.teams.find(x=>x.id===id)||{};return{...st[id],name:t.name||'?'}}).sort((a,b)=>b.points-a.points||b.wins-a.wins).map((s,i)=>{s.rank=i+1;return s});}
+function tMrow(m,t1,t2){if(!t1||!t2)return'';const w=m.winner?`→ ${esc((D.teams.find(x=>x.id===m.winner)||{}).name||'?')} 胜`:'';return`<div class="m-row"><span style="flex:1;text-align:right">${esc(t1.name)}</span><input value="${fmt(m.s1)}" onchange="upTM('${m.id}','s1',this.value)"><span class="vs">:</span><input value="${fmt(m.s2)}" onchange="upTM('${m.id}','s2',this.value)"><span style="flex:1">${esc(t2.name)}</span><span style="font-size:.65em;color:var(--text2)">BO${m.bo}</span><span style="font-size:.68em;color:var(--pri)">${w}</span><input class="date-inp" value="${m.date||''}" onchange="upTMDate('${m.id}',this.value)"><button class="btn btn-g btn-xs" onclick="rstTM('${m.id}')">重置</button></div>`;}
+function tKorow(ko){const t1=D.teams.find(x=>x.id===ko.t1),t2=D.teams.find(x=>x.id===ko.t2);const rn={semifinal:'半决赛',third:'季军赛',final:'🏆 决赛'}[ko.r]||ko.r;const w=ko.winner?`→ ${esc((D.teams.find(x=>x.id===ko.winner)||{}).name||'?')} 胜`:'';return`<div class="m-row" style="border-left:2px solid var(--t3);margin-bottom:3px"><b style="min-width:50px;color:var(--t3);font-size:.7em">${rn}</b><span style="flex:1;text-align:right">${t1?esc(t1.name):'<i style="color:var(--text2)">待定</i>'}</span><input value="${fmt(ko.s1)}" onchange="upTKo('${ko.id}','s1',this.value)"><span class="vs">:</span><input value="${fmt(ko.s2)}" onchange="upTKo('${ko.id}','s2',this.value)"><span style="flex:1">${t2?esc(t2.name):'<i style="color:var(--text2)">待定</i>'}</span><span style="font-size:.65em;color:var(--text2)">BO${ko.bo}</span><span style="font-size:.68em;color:var(--pri)">${w}</span><input class="date-inp" value="${ko.date||''}" onchange="upTKoDate('${ko.id}',this.value)"><button class="btn btn-g btn-xs" onclick="rstTKo('${ko.id}')">重置</button></div>`;}
+function rTeamBracketView(){
+  if(!D.teamM.groups||Object.keys(D.teamM.groups).length===0)return'<div class="card"><p style="text-align:center;color:var(--text2);padding:48px">暂无数据</p></div>';
+  let h='<div class="g-grid" style="margin-bottom:12px">';Object.entries(D.teamM.groups).forEach(([gn,g])=>{const st=calcTSt(gn,g);h+=`<div class="g-card"><div class="g-hd">${gn}组</div><table><thead><tr><th>队伍</th><th>积分</th><th>胜/负</th></tr></thead><tbody>`;st.forEach(s=>h+=`<tr class="${s.rank<=2?'q':''}"><td>${esc(s.name)}</td><td>${s.points}</td><td>${s.wins}/${s.losses}</td></tr>`);h+=`</tbody></table></div>`;});h+=`</div>`;
+  const sf1=D.teamM.knockout.find(k=>k.r==='semifinal'&&k.label.includes('A1'));
+  const sf2=D.teamM.knockout.find(k=>k.r==='semifinal'&&k.label.includes('B1'));
+  const tp=D.teamM.knockout.find(k=>k.r==='third'),fin=D.teamM.knockout.find(k=>k.r==='final');
+  const tpn=(tid)=>{if(!tid)return'<span style="color:var(--text2)">待定</span>';const t=D.teams.find(x=>x.id===tid);return esc((t||{}).name||'?')};
+  const tmb=(mt,rl,bo)=>{const t1=mt?mt.t1:null,t2=mt?mt.t2:null,w=mt?mt.winner:null,s1=mt&&mt.s1!==null?mt.s1:'-',s2=mt&&mt.s2!==null?mt.s2:'-';return`<div class="bk-m${w?' won':''}"><div class="rd">${rl} · BO${bo}</div><div class="p1${w===t1?' w':''}">${tpn(t1)}</div><div class="sc">${s1}:${s2}</div><div class="p2${w===t2?' w':''}">${tpn(t2)}</div></div>`;};
+  const champ=fin&&fin.winner?tpn(fin.winner):'待定';let runner='待定';if(fin&&fin.winner&&fin.t1&&fin.t2)runner=tpn(fin.winner===fin.t1?fin.t2:fin.t1);
+  h+=`<div class="card animate-in"><div class="card-trim"></div><h2>🏆 3V3 淘汰赛</h2><div class="bk-wrap"><div class="bk-row"><div class="bk-col"><div class="bk-ttl">半决赛 (BO5)</div>${tmb(sf1,'A1 vs B2',5)}<div style="height:16px"></div>${tmb(sf2,'B1 vs A2',5)}</div><div class="bk-arr">▶</div><div class="bk-col"><div class="bk-ttl">决赛 (BO7)</div>${tmb(fin,'决赛',7)}</div><div class="bk-arr">▶</div><div class="bk-col"><div class="bk-ttl">季军赛 (BO5)</div>${tmb(tp,'季军赛',5)}</div><div class="rs-card"><div>🥇 <b>冠军</b>: ${champ}</div><div>🥈 <b>亚军</b>: ${runner}</div><div>🥉 <b>季军</b>: ${tp&&tp.winner?tpn(tp.winner):'待定'}</div></div></div></div></div>`;return h;}
+
+// ==================== SCORE + DATE UPDATES ====================
+function aw(m,bo){if(m.s1===null||m.s2===null){m.winner=null;return}const n=Math.ceil(bo/2);if(m.s1>=n&&m.s1>m.s2)m.winner=m.p1||m.t1;else if(m.s2>=n&&m.s2>m.s1)m.winner=m.p2||m.t2;else m.winner=null}
+function upM(tier,mid,f,v){const m=D.matches[tier];let fd=null;Object.values(m.groups).forEach(g=>{const x=g.matches.find(y=>y.id===mid);if(x)fd=x});if(!fd)return;fd[f]=v===''?null:parseInt(v);aw(fd,fd.bo);advKnock(tier);saveAll(D);showAP('schedule')}
+function upK(tier,kid,f,v){const m=D.matches[tier];const ko=m.knockout.find(x=>x.id===kid);if(!ko)return;ko[f]=v===''?null:parseInt(v);aw(ko,ko.bo);advKnock(tier);saveAll(D);showAP('schedule')}
+function upMDate(tier,mid,v){const m=D.matches[tier];let fd=null;Object.values(m.groups).forEach(g=>{const x=g.matches.find(y=>y.id===mid);if(x)fd=x});if(fd){fd.date=v;saveAll(D)}}
+function upKDate(tier,kid,v){const m=D.matches[tier];const ko=m.knockout.find(x=>x.id===kid);if(ko){ko.date=v;saveAll(D)}}
+function upTM(mid,f,v){let fd=null;Object.values(D.teamM.groups).forEach(g=>{const x=g.matches.find(y=>y.id===mid);if(x)fd=x});if(!fd)return;fd[f]=v===''?null:parseInt(v);aw(fd,fd.bo);advTK();saveAll(D);showAP('schedule')}
+function upTKo(kid,f,v){const ko=D.teamM.knockout.find(x=>x.id===kid);if(!ko)return;ko[f]=v===''?null:parseInt(v);aw(ko,ko.bo);advTK();saveAll(D);showAP('schedule')}
+function upTMDate(mid,v){let fd=null;Object.values(D.teamM.groups).forEach(g=>{const x=g.matches.find(y=>y.id===mid);if(x)fd=x});if(fd){fd.date=v;saveAll(D)}}
+function upTKoDate(kid,v){const ko=D.teamM.knockout.find(x=>x.id===kid);if(ko){ko.date=v;saveAll(D)}}
+function rstM(tier,mid){const m=D.matches[tier];Object.values(m.groups).forEach(g=>{const x=g.matches.find(y=>y.id===mid);if(x){x.s1=null;x.s2=null;x.winner=null}});m.knockout.forEach(k=>{k.p1=null;k.p2=null;k.s1=null;k.s2=null;k.winner=null});saveAll(D);showAP('schedule')}
+function rstK(t,k){rstM(t,k)}
+function rstTM(mid){Object.values(D.teamM.groups).forEach(g=>{const x=g.matches.find(y=>y.id===mid);if(x){x.s1=null;x.s2=null;x.winner=null}});D.teamM.knockout.forEach(k=>{k.t1=null;k.t2=null;k.s1=null;k.s2=null;k.winner=null});saveAll(D);showAP('schedule')}
+function rstTKo(k){rstTM(k)}
+
+// ==================== KNOCKOUT ADVANCEMENT (ROBUST) ====================
+function advKnock(tier){
+  const m=D.matches[tier];
+  if(!m||!m.groups||m.knockout.length===0)return;
+  if(!m.groupConfirmed)return;
+  if(m.format==='direct')return;
+  // Backward compat: infer advPerGroup if missing
+  const ap=m.advPerGroup||(m.format==='quarter'?2:1);
+
+  // Get standings: top 1 and top 2 per group
+  const gw={}, gTop2={};
+  Object.entries(m.groups).forEach(([gn,g])=>{
+    const st=calcSt(gn,g,tier);
+    if(st.length>0)gw[gn]=st[0].id;
+    gTop2[gn]=st.slice(0,2).map(s=>s.id);
+  });
+  const keys=Object.keys(gw).sort();
+
+  if(m.format==='semifinal'){
+    const needSemis=m.numGroups>2||(m.numGroups===2&&ap===2);
+    if(!needSemis&&keys.length>=2){
+      // 2 groups, 1 per group → direct final
+      const fin=m.knockout.find(k=>k.r==='final');
+      if(fin&&(!fin.s1||fin.s1===null||!fin.p1)){fin.p1=gw[keys[0]]||null;fin.p2=gw[keys[1]]||null}
+    }else if(needSemis&&keys.length>=2){
+      // 4 groups → cross semis: A1-C2, B1-D1 (or A1-D1, B1-C1)
+      // 2 groups top2 → cross semis: A1-B2, B1-A2
+      const sf1=m.knockout.find(k=>k.r==='semifinal'&&k.label.includes('半决赛1'));
+      const sf2=m.knockout.find(k=>k.r==='semifinal'&&k.label.includes('半决赛2'));
+      const tp=m.knockout.find(k=>k.r==='third'),fin=m.knockout.find(k=>k.r==='final');
+
+      if(m.numGroups>=4&&keys.length>=4){
+        // 4 groups: A1 vs D1, B1 vs C1 (cross bracket)
+        if(sf1&&(!sf1.s1||sf1.s1===null||!sf1.p1)){sf1.p1=gw[keys[0]]||null;sf1.p2=gw[keys[3]]||null}
+        if(sf2&&(!sf2.s1||sf2.s1===null||!sf2.p1)){sf2.p1=gw[keys[1]]||null;sf2.p2=gw[keys[2]]||null}
+      }else if(m.numGroups===2&&ap===2&&keys.length>=2){
+        // 2 groups, top 2 each: A1 vs B2, B1 vs A2
+        const a2=gTop2[keys[0]]?gTop2[keys[0]][1]:null;
+        const b2=gTop2[keys[1]]?gTop2[keys[1]][1]:null;
+        if(sf1&&(!sf1.s1||sf1.s1===null||!sf1.p1)){sf1.p1=gw[keys[0]]||null;sf1.p2=b2}
+        if(sf2&&(!sf2.s1||sf2.s1===null||!sf2.p1)){sf2.p1=gw[keys[1]]||null;sf2.p2=a2}
+      }else{
+        // Fallback: populate semis with available winners
+        if(sf1&&keys.length>=2&&(!sf1.s1||sf1.s1===null||!sf1.p1)){sf1.p1=gw[keys[0]]||null;sf1.p2=gw[keys[keys.length-1]]||null}
+        if(sf2&&keys.length>=3&&(!sf2.s1||sf2.s1===null||!sf2.p1)){sf2.p1=gw[keys[1]]||null;sf2.p2=gw[keys.length>3?keys[keys.length-2]:keys[1]]||null}
+      }
+      // Propagate semifinal winners to final/3rd
+      if(sf1&&sf1.winner&&sf2&&sf2.winner){
+        if(fin){fin.p1=sf1.winner;fin.p2=sf2.winner}
+        if(tp){tp.p1=sf1.winner===sf1.p1?sf1.p2:sf1.p1;tp.p2=sf2.winner===sf2.p1?sf2.p2:sf2.p1}
+      }
+    }
+  }else{// quarter: 4 groups, top 2 each → 8 quarterfinalists
+    const qfs=m.knockout.filter(k=>k.r==='quarter');
+    const groups=Object.keys(m.groups).sort();
+    if(groups.length>=4&&qfs.length>=4){
+      const[A,B,C,D]=groups;
+      if(gTop2[A]&&gTop2[A].length>=2&&gTop2[B]&&gTop2[B].length>=2&&gTop2[C]&&gTop2[C].length>=2&&gTop2[D]&&gTop2[D].length>=2){
+        // Cross-bracket: A1-D2, B1-C2, C1-B2, D1-A2
+        if(!qfs[0].p1||qfs[0].s1===null){qfs[0].p1=gTop2[A][0];qfs[0].p2=gTop2[D][1]}
+        if(!qfs[1].p1||qfs[1].s1===null){qfs[1].p1=gTop2[B][0];qfs[1].p2=gTop2[C][1]}
+        if(!qfs[2].p1||qfs[2].s1===null){qfs[2].p1=gTop2[C][0];qfs[2].p2=gTop2[B][1]}
+        if(!qfs[3].p1||qfs[3].s1===null){qfs[3].p1=gTop2[D][0];qfs[3].p2=gTop2[A][1]}
+      }
+    }
+    // QF winners → SF
+    const sf1=m.knockout.find(k=>k.r==='semifinal'&&k.label.includes('半决赛1'));
+    const sf2=m.knockout.find(k=>k.r==='semifinal'&&k.label.includes('半决赛2'));
+    if(qfs.length>=4&&sf1&&sf2){
+      if(qfs[0].winner&&qfs[3].winner){sf1.p1=qfs[0].winner;sf1.p2=qfs[3].winner}
+      if(qfs[1].winner&&qfs[2].winner){sf2.p1=qfs[1].winner;sf2.p2=qfs[2].winner}
+    }
+    // SF winners → Final + 3rd
+    const tp=m.knockout.find(k=>k.r==='third'),fin=m.knockout.find(k=>k.r==='final');
+    if(sf1&&sf1.winner&&sf2&&sf2.winner){
+      if(fin){fin.p1=sf1.winner;fin.p2=sf2.winner}
+      if(tp){tp.p1=sf1.winner===sf1.p1?sf1.p2:sf1.p1;tp.p2=sf2.winner===sf2.p1?sf2.p2:sf2.p1}
+    }
+  }
+}
+
+function advTK(){
+  if(!D.teamM.groups)return;
+  const gt={};Object.entries(D.teamM.groups).forEach(([gn,g])=>{
+    const st=calcTSt(gn,g);if(st.length>=2)gt[gn]=[st[0].id,st[1].id];
+  });
+  const sf1=D.teamM.knockout.find(k=>k.r==='semifinal'&&k.label.includes('A1'));
+  const sf2=D.teamM.knockout.find(k=>k.r==='semifinal'&&k.label.includes('B1'));
+  const tp=D.teamM.knockout.find(k=>k.r==='third'),fin=D.teamM.knockout.find(k=>k.r==='final');
+  if(sf1&&gt['A']&&gt['B']){sf1.t1=gt['A'][0];sf1.t2=gt['B'][1]}
+  if(sf2&&gt['B']&&gt['A']){sf2.t1=gt['B'][0];sf2.t2=gt['A'][1]}
+  if(sf1&&sf1.winner&&sf2&&sf2.winner){if(fin){fin.t1=sf1.winner;fin.t2=sf2.winner}if(tp){tp.t1=sf1.winner===sf1.t1?sf1.t2:sf1.t1;tp.t2=sf2.winner===sf2.t1?sf2.t2:sf2.t1}}
+}
+
+// ==================== PLAYER PANELS ====================
+function showPP(p){setANav(p);sPage();const m=document.getElementById('mainContent');const user=D.users.find(u=>u.id===D.session.id);const pl=D.players.find(x=>x.id===user.id);switch(p){
+  case'myinfo':
+    const g=pl&&pl.group?TIERS[pl.group]:'待编排';const gc=pl&&pl.group?TC[pl.group]:'bn';
+    const t=pl&&pl.teamId?D.teams.find(x=>x.id===pl.teamId):null;
+    m.innerHTML=`<div class="tb"><h2>👤 我的信息</h2></div><div class="card animate-in"><div class="card-trim"></div><h2>报名详情</h2>
+      <div class="stat-r"><div class="stat"><div class="v">${esc(user.name)}</div><div class="l">角色名</div></div>
+      <div class="stat"><div class="v">${user.score}</div><div class="l">论剑分</div></div>
+      <div class="stat"><div class="v">${user.winrate}%</div><div class="l">胜率</div></div>
+      <div class="stat"><div class="v">${user.event==='both'?'个人+3V3':user.event==='individual'?'个人赛':'3V3'}</div><div class="l">参赛项目</div></div></div>
+      <p style="margin-top:12px;font-size:.85em">当前组别: <span class="badge ${gc}">${g}</span></p>
+      ${t?`<p style="margin-top:4px;font-size:.85em">3V3队伍: <b>${esc(t.name)}</b></p>`:''}
+      ${!pl?'<p style="margin-top:4px;font-size:.85em;color:var(--warn)">暂未录入赛事名单</p>':''}</div>`;break;
+  case'mysched':m.innerHTML=pSchedule(user,pl);break;
+  case'viewbracket':m.innerHTML=pBracket(pl);break;
+}}
+function pSchedule(user,p){
+  if(!p||!p.group)return`<div class="tb"><h2>📅 我的赛程</h2></div><div class="card"><p style="text-align:center;color:var(--text2);padding:48px">尚未编排组别</p></div>`;
+  const m=D.matches[p.group];const lb=TIERS[p.group];
+  if(!m.groups||Object.keys(m.groups).length===0)return`<div class="tb"><h2>📅 我的赛程</h2></div><div class="card"><p style="text-align:center;color:var(--text2);padding:48px">赛程未生成</p></div>`;
+  let h=`<div class="tb"><h2>📅 我的赛程</h2><span class="badge ${TC[p.group]}">${lb}</span></div>`;
+  let found=false;
+  Object.entries(m.groups).forEach(([gn,g])=>{
+    if(!g.players.includes(p.id))return;found=true;
+    const st=calcSt(gn,g,p.group);
+    h+=`<div class="card animate-in"><div class="card-trim"></div><h2>${gn}组 · ${lb} (BO3)</h2>
+      <table><thead><tr><th>#</th><th>侠客</th><th>分</th><th>胜</th><th>负</th><th>积分</th></tr></thead><tbody>`;
+    st.forEach(s=>h+=`<tr class="${s.id===p.id?'q':''}"><td>${s.rank}</td><td>${esc(s.name)}${s.id===p.id?' ⬅':''}</td><td>${s.score}</td><td>${s.wins}</td><td>${s.losses}</td><td><b>${s.points}</b></td></tr>`);
+    h+=`</tbody></table><h3>我的对阵</h3>`;
+    g.matches.forEach(m2=>{if(m2.p1!==p.id&&m2.p2!==p.id)return;const p1=D.players.find(x=>x.id===m2.p1),p2=D.players.find(x=>x.id===m2.p2);h+=`<div class="m-row"><span style="flex:1;text-align:right">${esc(p1?p1.name:'?')}</span><b>${fmt(m2.s1)}:${fmt(m2.s2)}</b><span style="flex:1">${esc(p2?p2.name:'?')}</span><span style="font-size:.65em;color:var(--text2)">BO${m2.bo}</span>${m2.date?`<span style="font-size:.65em;color:var(--text2)">📅${m2.date}</span>`:''}${m2.winner?`<span style="font-size:.68em;color:var(--pri)">→ ${esc((D.players.find(x=>x.id===m2.winner)||{}).name||'?')} 胜</span>`:''}</div>`;});
+    h+=`</div>`;
+  });
+  if(!found)h+='<div class="card"><p style="text-align:center;color:var(--text2);padding:32px">你不在当前任何小组中</p></div>';
+  return h;
+}
+function pBracket(p){const tier=p&&p.group?p.group:'t1';const m=D.matches[tier];const lb=TIERS[tier];if(!m.groups||Object.keys(m.groups).length===0)return`<div class="tb"><h2>🏆 晋级图</h2></div><div class="card"><p style="text-align:center;color:var(--text2);padding:48px">暂无数据</p></div>`;let h=`<div class="tb"><h2>🏆 晋级图</h2><span class="badge ${TC[tier]}">${lb}</span></div><div class="g-grid" style="margin-bottom:12px">`;Object.entries(m.groups).forEach(([gn,g])=>{const st=calcSt(gn,g,tier);h+=`<div class="g-card ${tier}"><div class="g-hd">${gn}组</div><table><thead><tr><th>侠客</th><th>积分</th><th>胜/负</th></tr></thead><tbody>`;st.forEach(s=>h+=`<tr class="${s.rank<=getAdvCount(m)?'q':''}"><td>${esc(s.name)}</td><td>${s.points}</td><td>${s.wins}/${s.losses}</td></tr>`);h+=`</tbody></table></div>`;});h+=`</div>`;if(!m.groupConfirmed){h+=`<div class="card"><p style="text-align:center;color:var(--text2);padding:32px">🔒 小组赛尚未锁定，淘汰赛对阵待管理员确认后公布</p></div>`;}else if(m.knockout.length>0){const sf1=m.knockout.find(k=>k.r==='semifinal'&&k.label.includes('半决赛1'));const sf2=m.knockout.find(k=>k.r==='semifinal'&&k.label.includes('半决赛2'));const tp=m.knockout.find(k=>k.r==='third'),fin=m.knockout.find(k=>k.r==='final');const qf=m.knockout.filter(k=>k.r==='quarter');h+=bkDOM(m,sf1,sf2,fin,tp,qf,lb);}else{h+=`<div class="card"><h2>🏆 ${lb} · 冠军</h2><p style="font-size:1.2em;text-align:center;color:var(--pri);padding:20px">${(()=>{const allSt=[];Object.entries(m.groups).forEach(([gn,g])=>{const st=calcSt(gn,g,tier);allSt.push(...st)});allSt.sort((a,b)=>b.points-a.points||b.wins-a.wins);return allSt[0]?esc(allSt[0].name):'待定';})()}</p></div>`;}return h;}
+
+// ==================== TEST DATA GENERATOR ====================
+function generateTestData(){
+  if(D.players.length>0&&!confirm('当前已有'+D.players.length+'名选手。生成测试数据将追加20人，确定继续？'))return;
+  const names=[
+    '燕云飞','江无浪','温无缺','寒香寻','柳青衣','楚清泉','千夜','柴荣',
+    '田英','张淮深','东阙公子','清河公主','李逍遥','赵客','吴钩','霜雪',
+    '风清扬','独孤剑','叶孤城','西门吹雪','花无缺','小鱼儿','楚留香','陆小凤',
+    '杨过','令狐冲','张无忌','郭靖','黄蓉','小龙女'
+  ];
+  const events=['both','both','both','individual','individual','individual','team','team','both','both'];
+  const startCount=D.players.length;
+  for(let i=0;i<20;i++){
+    const nm=names[i]||('侠客'+(i+1));
+    const score=800+Math.floor(Math.random()*1200);
+    const wr=40+Math.floor(Math.random()*45);
+    const uid='test_'+Date.now().toString(36)+'_'+i;
+    // Create user account
+    if(!D.users.find(u=>u.username===('test_'+nm))){
+      D.users.push({id:uid,username:'test_'+nm,password:'test123',role:'player',name:nm,score,winrate:wr,event:events[i%events.length],contact:'wx_'+nm,note:'测试选手',registeredAt:new Date().toISOString()});
+    }
+    D.players.push({id:uid,name:nm,score,winrate:wr,event:events[i%events.length],group:null,teamId:null,contact:'wx_'+nm,note:'测试选手'});
+  }
+  // Auto assign tiers
+  const indiv=D.players.filter(p=>p.event!=='team');
+  const sorted=[...indiv].sort((a,b)=>b.score-a.score||b.winrate-a.winrate);
+  const total=sorted.length,s1=Math.floor(total/3),s2=Math.floor(total*2/3);
+  sorted.forEach((p,i)=>{
+    if(i<s1)p.group='t1';else if(i<s2)p.group='t2';else p.group='t3';
+  });
+  // Auto generate schedules for all tiers
+  let genCount=0;
+  ['t1','t2','t3'].forEach(tier=>{
+    const ps=D.players.filter(p=>p.group===tier&&p.event!=='team');
+    if(ps.length>=3){const r=adaptiveSchedule(ps);if(r){D.matches[tier]=r;genCount++;}}
+  });
+  // Auto-create 3V3 teams using new adaptive logic
+  autoTeams();
+  if(D.teams.length>=3)genTeamSched();
+  saveAll(D);
+  toast('✅ 已生成20名测试选手！天罡'+sorted.filter(p=>p.group==='t1').length+'·地煞'+sorted.filter(p=>p.group==='t2').length+'·人杰'+sorted.filter(p=>p.group==='t3').length+'，赛程已自动生成');
+  showAP('groups');
+}
+
+// ==================== CSV ====================
+function exportCSV(){if(D.players.length===0){toast('无数据');return}const hdr='角色名,论剑分,胜率,参赛项目,分组,联系方式,备注';const rows=D.players.map(p=>[p.name,p.score,p.winrate+'%',p.event,TIERS[p.group]||'未分组',p.contact||'',p.note||''].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));const blob=new Blob(['﻿'+hdr+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='论剑问道报名表.csv';a.click();}
+function importCSV(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const lines=ev.target.result.split('\n').filter(l=>l.trim());if(lines.length<2){toast('格式错误');return}let n=0;for(let i=1;i<lines.length;i++){const cols=pCSV(lines[i]);if(cols.length<2||!cols[0])continue;const name=cols[0].trim();if(D.players.find(p=>p.name===name))continue;const score=parseInt(cols[1])||0,wr=parseInt(cols[2])||0;let evt='both';if(cols[3]&&cols[3].includes('仅个人'))evt='individual';else if(cols[3]&&cols[3].includes('仅3V3'))evt='team';D.players.push({id:'imp_'+Date.now().toString(36)+n,name,score,winrate:wr,event:evt,contact:(cols[5]||'').trim(),note:(cols[6]||'').trim(),group:null,teamId:null});n++;}saveAll(D);showAP('players');toast(`导入${n}人`);};r.readAsText(f,'UTF-8');e.target.value='';}
+function pCSV(line){const r=[];let cur='',q=false;for(const ch of line){if(ch==='"')q=!q;else if(ch===','&&!q){r.push(cur);cur=''}else cur+=ch}r.push(cur);return r;}
+
+// ==================== VIDEO INTRO ====================
+function playVideoIntro(){
+  const intro=document.getElementById('videoIntro');
+  const video=document.getElementById('introVideo');
+  if(!intro||!video)return;
+  video.currentTime=0;
+  video.play().then(()=>{
+    // 播放4秒后开始淡出
+    setTimeout(()=>{intro.classList.add('fadeout')},3800);
+    // 5.5秒后完全移除
+    setTimeout(()=>{intro.classList.add('done');captureVideoFrames(video)},5500);
+  }).catch(()=>{
+    // 如果自动播放失败（某些浏览器限制），直接显示登录页
+    intro.classList.add('done');
+  });
+}
+
+// 从视频中截取关键帧做装饰素材
+let _vidFrames=[];
+function captureVideoFrames(video){
+  if(!video||video.readyState<2)return;
+  const canvas=document.createElement('canvas');
+  canvas.width=320;canvas.height=180;
+  const ctx=canvas.getContext('2d');
+  const timestamps=[0.5,2,3.5,5,7]; // 不同时间点截图
+  timestamps.forEach((t,i)=>{
+    try{
+      video.currentTime=t;
+      // 等seek完成后截图
+      const onSeeked=()=>{
+        ctx.drawImage(video,0,0,320,180);
+        _vidFrames.push(canvas.toDataURL('image/jpeg',.7));
+        if(_vidFrames.length>=timestamps.length)renderVideoFrames();
+        video.removeEventListener('seeked',onSeeked);
+      };
+      video.addEventListener('seeked',onSeeked);
+    }catch(e){}
+  });
+}
+function renderVideoFrames(){
+  const container=document.getElementById('videoFrames');
+  if(!container||_vidFrames.length<3)return;
+  container.innerHTML=_vidFrames.slice(0,3).map((url,i)=>
+    `<div class="vid-frame f${i+1}"><img src="${url}" alt="燕云十六声"></div>`
+  ).join('');
+}
+
+// 激活视频背景（登录后）
+function startAppVideoBg(){
+  const v=document.getElementById('appVideoBg');
+  const f=document.getElementById('videoFrames');
+  if(v){v.classList.add('on');v.play().catch(()=>{})}
+  if(f)f.classList.add('on');
+}
+
+// ==================== INIT ====================
+(function(){
+  D=loadAll();
+  // Auto-connect Firebase if configured
+  try{if(typeof firebase!=='undefined'&&ld('syncConfig'))fbInit();}catch(e){}
+  if(D.session){
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('app').classList.add('on');
+    document.getElementById('videoIntro').classList.add('done');
+    buildSidebar();
+    if(D.session.role==='admin')showAP('players');else showPP('myinfo');
+    setTimeout(startAppVideoBg,500);
+  }else{
+    // 未登录 → 播放视频intro
+    playVideoIntro();
+  }
+})();
+</script>
+</body>
+</html>

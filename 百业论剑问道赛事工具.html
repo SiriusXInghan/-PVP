@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>百业PVP"论剑问道"和谐挑战赛</title>
+<style>
+:root {
+  --bg: #0f0f1a;
+  --bg2: #1a1a2e;
+  --bg3: #252540;
+  --gold: #d4a745;
+  --gold2: #f0c060;
+  --red: #c0392b;
+  --red2: #e74c3c;
+  --green: #27ae60;
+  --blue: #3498db;
+  --text: #e0d6c2;
+  --text2: #a09080;
+  --border: #3a3050;
+  --card: #1e1e35;
+  --high: #e74c3c;
+  --low: #3498db;
+  --team: #27ae60;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+.header { background:linear-gradient(135deg, #1a1025, #1a1a2e, #102520); border-bottom:2px solid var(--gold); padding:20px; text-align:center; position:relative; overflow:hidden; }
+.header::before { content:''; position:absolute; top:0;left:0;right:0;bottom:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L35 25 L55 30 L35 35 L30 55 L25 35 L5 30 L25 25 Z' fill='rgba(212,167,69,0.03)'/%3E%3C/svg%3E"); pointer-events:none; }
+.header h1 { font-size:2em; color:var(--gold); text-shadow:0 0 20px rgba(212,167,69,0.3); margin-bottom:5px; }
+.header .subtitle { color:var(--text2); font-size:0.9em; }
+.nav { display:flex; gap:0; background:var(--bg2); border-bottom:1px solid var(--border); overflow-x:auto; position:sticky; top:0; z-index:100; }
+.nav button { flex:1; min-width:80px; padding:14px 10px; background:none; border:none; color:var(--text2); cursor:pointer; font-size:0.95em; border-bottom:3px solid transparent; transition:all 0.2s; white-space:nowrap; font-family:inherit; }
+.nav button:hover { color:var(--text); background:rgba(255,255,255,0.03); }
+.nav button.active { color:var(--gold); border-bottom-color:var(--gold); background:rgba(212,167,69,0.05); }
+.nav .badge { background:var(--red); color:#fff; border-radius:10px; padding:2px 8px; font-size:0.75em; margin-left:4px; }
+.container { max-width:1200px; margin:0 auto; padding:20px; }
+.tab { display:none; }
+.tab.active { display:block; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:16px; }
+.card h2 { color:var(--gold); font-size:1.2em; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.card h3 { color:var(--text); font-size:1em; margin:16px 0 8px; }
+.form-group { margin-bottom:12px; }
+.form-group label { display:block; margin-bottom:4px; color:var(--text2); font-size:0.85em; }
+.form-group input, .form-group select { width:100%; padding:10px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; color:var(--text); font-size:0.95em; font-family:inherit; }
+.form-group input:focus, .form-group select:focus { outline:none; border-color:var(--gold); }
+.form-row { display:flex; gap:12px; }
+.form-row .form-group { flex:1; }
+.btn { padding:10px 20px; border:none; border-radius:6px; cursor:pointer; font-size:0.9em; font-family:inherit; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px; }
+.btn-gold { background:var(--gold); color:#1a1a2e; font-weight:bold; }
+.btn-gold:hover { background:var(--gold2); }
+.btn-red { background:var(--red); color:#fff; }
+.btn-red:hover { background:var(--red2); }
+.btn-blue { background:var(--blue); color:#fff; }
+.btn-green { background:var(--green); color:#fff; }
+.btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
+.btn-outline:hover { background:var(--bg3); }
+.btn-sm { padding:6px 12px; font-size:0.8em; }
+.btn-xs { padding:3px 8px; font-size:0.72em; border-radius:4px; }
+.btn-group { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+table { width:100%; border-collapse:collapse; font-size:0.9em; }
+th, td { padding:10px 8px; text-align:left; border-bottom:1px solid var(--border); }
+th { color:var(--text2); font-weight:normal; font-size:0.8em; text-transform:uppercase; }
+tr:hover { background:rgba(255,255,255,0.02); }
+.tag { display:inline-block; padding:2px 10px; border-radius:10px; font-size:0.78em; font-weight:bold; }
+.tag-high { background:rgba(231,76,60,0.2); color:var(--high); }
+.tag-low { background:rgba(52,152,219,0.2); color:var(--low); }
+.tag-team { background:rgba(39,174,96,0.2); color:var(--team); }
+.tag-neut { background:rgba(255,255,255,0.08); color:var(--text2); }
+.empty-state { text-align:center; padding:40px; color:var(--text2); }
+.empty-state .icon { font-size:3em; margin-bottom:12px; }
+.stat-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+.stat-card { flex:1; min-width:120px; background:var(--bg3); border-radius:8px; padding:14px; text-align:center; }
+.stat-card .num { font-size:1.8em; font-weight:bold; color:var(--gold); }
+.stat-card .lbl { font-size:0.78em; color:var(--text2); margin-top:2px; }
+
+/* Bracket Styles */
+.bracket-container { overflow-x:auto; padding:20px 0; }
+.bracket-rounds { display:flex; gap:0; min-width:max-content; align-items:stretch; justify-content:center; }
+.bracket-column { display:flex; flex-direction:column; gap:0; min-width:200px; }
+.bracket-col-title { text-align:center; color:var(--gold); font-size:0.9em; margin-bottom:16px; font-weight:bold; }
+.bracket-match { background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:10px 14px; margin-bottom:4px; position:relative; min-width:180px; }
+.bracket-match .match-players { font-size:0.85em; }
+.bracket-match .match-score { font-size:0.75em; color:var(--text2); margin-top:2px; }
+.bracket-match .match-bo { font-size:0.7em; color:var(--gold); }
+.bracket-match.winner { border-color:var(--gold); box-shadow:0 0 8px rgba(212,167,69,0.2); }
+.bracket-match .winner-mark { color:var(--gold); font-weight:bold; }
+/* Bracket connectors */
+.bracket-connectors { display:flex; flex-direction:column; justify-content:center; min-width:50px; position:relative; align-items:stretch; }
+.bracket-connector { position:relative; display:flex; align-items:center; }
+.bracket-connector .h-line { flex:1; height:2px; background:var(--gold); opacity:0.5; }
+.bracket-connector .v-line { width:2px; background:var(--gold); opacity:0.5; }
+.bracket-connector .arrow-head { width:0; height:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:8px solid var(--gold); opacity:0.5; }
+.bracket-spacer { height:80px; }
+
+/* Group Table */
+.group-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; }
+.group-card { background:var(--bg3); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.group-card .group-title { background:rgba(212,167,69,0.1); padding:10px 14px; color:var(--gold); font-weight:bold; font-size:0.9em; }
+.group-card table { font-size:0.82em; }
+.group-card th { font-size:0.75em; }
+.qualified { background:rgba(39,174,96,0.1); }
+.qualified td:first-child::before { content:'✓ '; color:var(--green); font-weight:bold; }
+
+/* Match result input */
+.match-result-row { display:flex; align-items:center; gap:8px; padding:8px; background:var(--bg2); border-radius:6px; margin:4px 0; flex-wrap:wrap; }
+.match-result-row .vs { color:var(--gold); font-weight:bold; }
+.match-result-row input { width:50px; padding:6px; background:var(--bg3); border:1px solid var(--border); border-radius:4px; color:var(--text); text-align:center; font-family:inherit; }
+.match-result-row select { padding:6px; background:var(--bg3); border:1px solid var(--border); border-radius:4px; color:var(--text); font-family:inherit; }
+
+/* Team display */
+.team-display { display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:6px 10px; background:var(--bg2); border-radius:6px; margin:4px 0; }
+.team-display .team-name { font-weight:bold; color:var(--team); min-width:60px; }
+.team-display .member { font-size:0.8em; }
+.team-display .member-high { color:var(--high); }
+.team-display .member-low { color:var(--low); }
+
+/* Print */
+@media print {
+  body { background:#fff; color:#000; }
+  .nav, .btn, .form-group, .header { display:none !important; }
+  .tab { display:block !important; }
+  .card { border:1px solid #ccc; break-inside:avoid; }
+  .bracket-match { border:1px solid #999; }
+}
+
+/* Toast */
+.toast { position:fixed; bottom:20px; right:20px; background:var(--bg3); border:1px solid var(--gold); color:var(--gold); padding:12px 20px; border-radius:8px; z-index:999; animation:fadeIn 0.3s; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+/* Modal */
+.modal-overlay { position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:200; }
+.modal { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; max-width:500px; width:90%; max-height:80vh; overflow-y:auto; }
+.modal h2 { color:var(--gold); margin-bottom:16px; }
+.modal .close { float:right; background:none; border:none; color:var(--text2); font-size:1.5em; cursor:pointer; }
+
+.info-tip { background:rgba(52,152,219,0.1); border-left:3px solid var(--blue); padding:10px 14px; border-radius:0 6px 6px 0; font-size:0.85em; color:var(--text2); margin:8px 0; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>⚔️ 百业PVP"论剑问道"和谐挑战赛</h1>
+  <div class="subtitle">以武会友 · 点到为止 · 人人皆有舞台</div>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="switchTab('register')">📝 报名登记 <span class="badge" id="regBadge">0</span></button>
+  <button onclick="switchTab('players')">👥 选手管理</button>
+  <button onclick="switchTab('schedule')">📅 赛程表</button>
+  <button onclick="switchTab('bracket')">🏆 晋级图</button>
+  <button onclick="switchTab('teams')">🤝 3V3组队</button>
+</div>
+
+<div class="container">
+
+<!-- ==================== TAB: 报名登记 ==================== -->
+<div id="tab-register" class="tab active">
+  <div class="card">
+    <h2>📝 参赛报名</h2>
+    <div class="form-row">
+      <div class="form-group"><label>游戏ID *</label><input id="regName" placeholder="请输入游戏角色名"></div>
+      <div class="form-group"><label>功力值 *</label><input id="regPower" type="number" placeholder="功力值（数字）"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>参赛项目 *</label>
+        <select id="regEvent">
+          <option value="both">个人赛 + 3V3（都参加）</option>
+          <option value="individual">仅个人赛</option>
+          <option value="team">仅3V3多人赛</option>
+        </select>
+      </div>
+      <div class="form-group"><label>联系方式</label><input id="regContact" placeholder="微信号/QQ号（选填）"></div>
+    </div>
+    <div class="form-group"><label>备注</label><input id="regNote" placeholder="职业、在线时间等（选填）"></div>
+    <div class="btn-group">
+      <button class="btn btn-gold" onclick="registerPlayer()">✅ 提交报名</button>
+      <button class="btn btn-outline" onclick="clearRegForm()">清空</button>
+    </div>
+    <div class="info-tip">⚠️ 参赛资格：非雏鸟，且过去或未来待满1个月的百业成员（社主不参与本次赛事）</div>
+  </div>
+
+  <div class="card">
+    <h2>📋 已报名名单 <span style="font-size:0.7em;color:var(--text2)">（共 <span id="regCount">0</span> 人）</span></h2>
+    <div id="regList"></div>
+    <div class="btn-group">
+      <button class="btn btn-blue btn-sm" onclick="exportCSV()">📥 导出报名表(CSV)</button>
+      <button class="btn btn-outline btn-sm" onclick="importCSV()">📤 导入报名表</button>
+      <button class="btn btn-green btn-sm" onclick="loadDemoData()">🎮 加载演示数据</button>
+      <button class="btn btn-red btn-sm" onclick="clearAllData()">🗑 清空所有数据</button>
+    </div>
+    <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="handleCSVImport(event)">
+  </div>
+</div>
+
+<!-- ==================== TAB: 选手管理 ==================== -->
+<div id="tab-players" class="tab">
+  <div class="stat-row" id="playerStats"></div>
+  <div class="card">
+    <h2>⚙️ 分组操作</h2>
+    <div class="info-tip">
+      💡 <b>自动分组规则：</b>按功力值排序，前50%归入<b>高手组</b>（红色标签），后50%归入<b>低手组</b>（蓝色标签）。<br>
+      💡 <b>3V3组队规则：</b>每队强制 <b>1高手 + 2低手</b>，杜绝强强联合。
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-gold" onclick="autoAssignGroups()">🔄 自动分配高手/低手组</button>
+      <button class="btn btn-green" onclick="generateIndividualSchedule()">📅 生成个人赛赛程</button>
+      <button class="btn btn-blue" onclick="autoAssignTeams()">🤝 自动组3V3队伍</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>👥 选手列表</h2>
+    <div id="playerTable"></div>
+  </div>
+</div>
+
+<!-- ==================== TAB: 赛程表 ==================== -->
+<div id="tab-schedule" class="tab">
+  <div class="btn-group" style="margin-bottom:16px;">
+    <button class="btn btn-outline" id="schedBtnHigh" onclick="showSchedule('high')">🔴 个人赛·高手组</button>
+    <button class="btn btn-outline" id="schedBtnLow" onclick="showSchedule('low')">🔵 个人赛·低手组</button>
+    <button class="btn btn-outline" id="schedBtnTeam" onclick="showSchedule('team')">🟢 3V3多人赛</button>
+  </div>
+  <div id="scheduleContent"></div>
+</div>
+
+<!-- ==================== TAB: 晋级图 ==================== -->
+<div id="tab-bracket" class="tab">
+  <div class="btn-group" style="margin-bottom:16px;">
+    <button class="btn btn-outline" id="brackBtnHigh" onclick="showBracket('high')">🔴 个人赛·高手组</button>
+    <button class="btn btn-outline" id="brackBtnLow" onclick="showBracket('low')">🔵 个人赛·低手组</button>
+    <button class="btn btn-outline" id="brackBtnTeam" onclick="showBracket('team')">🟢 3V3多人赛</button>
+  </div>
+  <div id="bracketContent"></div>
+</div>
+
+<!-- ==================== TAB: 3V3组队 ==================== -->
+<div id="tab-teams" class="tab">
+  <div class="card">
+    <h2>🤝 3V3队伍管理</h2>
+    <div class="info-tip">每队强制 <b>1高手 + 2低手</b>。高手指由管理分配，低手可自由组队或由系统自动分配。</div>
+    <div class="btn-group">
+      <button class="btn btn-blue" onclick="autoAssignTeams()">🔄 自动组队</button>
+      <button class="btn btn-outline" onclick="manualTeamForm()">✏️ 手动组队</button>
+    </div>
+  </div>
+  <div id="teamList"></div>
+  <div class="card" style="margin-top:16px;">
+    <h2>📅 3V3赛程</h2>
+    <div id="teamSchedule"></div>
+  </div>
+</div>
+
+</div>
+
+<!-- Hidden CSV import -->
+<script>
+// ==================== DATA STORE ====================
+const STORAGE_KEY = 'baiye_tournament_data';
+
+function loadData() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    try { return JSON.parse(raw); } catch(e) {}
+  }
+  return {
+    players: [],           // {id, name, power, contact, event, note, group:'high'|'low'|null, teamId:null, registeredAt}
+    individualMatches: { high: { groups: [], knockout: [] }, low: { groups: [], knockout: [] } },
+    teamMatches: { groups: [], knockout: [] },
+    teams: []              // {id, name, members:[playerId,playerId,playerId]}
+  };
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+let data = loadData();
+
+// ==================== NAVIGATION ====================
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  const btn = document.querySelector(`.nav button[onclick="switchTab('${tab}')"]`);
+  if (btn) btn.classList.add('active');
+  refreshTab(tab);
+}
+
+function refreshTab(tab) {
+  switch(tab) {
+    case 'register': refreshRegister(); break;
+    case 'players': refreshPlayers(); break;
+    case 'schedule': refreshSchedule(); break;
+    case 'bracket': refreshBracket(); break;
+    case 'teams': refreshTeams(); break;
+  }
+}
+
+function refreshAll() {
+  data = loadData();
+  const activeTab = document.querySelector('.tab.active');
+  if (activeTab) {
+    const tabId = activeTab.id.replace('tab-', '');
+    refreshTab(tabId);
+  }
+  updateBadges();
+}
+
+function updateBadges() {
+  document.getElementById('regBadge').textContent = data.players.length;
+}
+
+// ==================== TOAST ====================
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+
+// ==================== REGISTRATION ====================
+function registerPlayer() {
+  const name = document.getElementById('regName').value.trim();
+  const power = parseInt(document.getElementById('regPower').value);
+  const event = document.getElementById('regEvent').value;
+  const contact = document.getElementById('regContact').value.trim();
+  const note = document.getElementById('regNote').value.trim();
+
+  if (!name) { toast('请输入游戏角色名'); return; }
+  if (!power || power <= 0) { toast('请输入有效功力值'); return; }
+  if (data.players.find(p => p.name === name)) { toast('该玩家已报名'); return; }
+
+  data.players.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    name, power, event, contact, note,
+    group: null, teamId: null,
+    registeredAt: new Date().toISOString()
+  });
+  saveData();
+  updateBadges();
+  clearRegForm();
+  refreshRegister();
+  toast(`✅ ${name} 报名成功！`);
+}
+
+function clearRegForm() {
+  document.getElementById('regName').value = '';
+  document.getElementById('regPower').value = '';
+  document.getElementById('regEvent').value = 'both';
+  document.getElementById('regContact').value = '';
+  document.getElementById('regNote').value = '';
+}
+
+function refreshRegister() {
+  const list = document.getElementById('regList');
+  document.getElementById('regCount').textContent = data.players.length;
+
+  if (data.players.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">📋</div>暂无报名，请填写上方表单报名</div>';
+    return;
+  }
+
+  list.innerHTML = `<table>
+    <thead><tr><th>#</th><th>游戏ID</th><th>功力</th><th>参赛项目</th><th>分组</th><th>联系方式</th><th>备注</th><th>操作</th></tr></thead>
+    <tbody>${data.players.map((p,i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td><b>${esc(p.name)}</b></td>
+        <td>${p.power}</td>
+        <td>${eventLabel(p.event)}</td>
+        <td>${groupTag(p.group)}</td>
+        <td>${esc(p.contact||'-')}</td>
+        <td>${esc(p.note||'-')}</td>
+        <td><button class="btn btn-red btn-xs" onclick="removePlayer('${p.id}')">删除</button></td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+
+function removePlayer(id) {
+  if (!confirm('确定删除该玩家吗？')) return;
+  data.players = data.players.filter(p => p.id !== id);
+  // Also remove from teams
+  data.teams.forEach(t => { t.members = t.members.filter(m => m !== id); });
+  data.teams = data.teams.filter(t => t.members.length > 0);
+  saveData();
+  refreshAll();
+  toast('已删除');
+}
+
+function eventLabel(e) {
+  if (e === 'both') return '个人赛+3V3';
+  if (e === 'individual') return '仅个人赛';
+  if (e === 'team') return '仅3V3';
+  return e;
+}
+
+function groupTag(g) {
+  if (g === 'high') return '<span class="tag tag-high">高手组</span>';
+  if (g === 'low') return '<span class="tag tag-low">低手组</span>';
+  return '<span class="tag tag-neut">未分组</span>';
+}
+
+function esc(s) {
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+// ==================== CSV EXPORT/IMPORT ====================
+function exportCSV() {
+  if (data.players.length === 0) { toast('无数据可导出'); return; }
+  const header = '游戏ID,功力值,参赛项目,分组,联系方式,备注,报名时间';
+  const rows = data.players.map(p =>
+    [p.name, p.power, eventLabel(p.event), (p.group==='high'?'高手组':p.group==='low'?'低手组':'未分组'), p.contact||'', p.note||'', p.registeredAt||'']
+      .map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')
+  );
+  const csv = '﻿' + header + '\n' + rows.join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = '百业论剑问道报名表.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('✅ 报名表已导出');
+}
+
+function importCSV() {
+  document.getElementById('csvFileInput').click();
+}
+
+function handleCSVImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const text = ev.target.result;
+    const lines = text.split('\n').filter(l => l.trim());
+    if (lines.length < 2) { toast('CSV格式错误'); return; }
+    let imported = 0;
+    for (let i = 1; i < lines.length; i++) {
+      const cols = parseCSVLine(lines[i]);
+      if (cols.length < 2 || !cols[0]) continue;
+      const name = cols[0].trim();
+      const power = parseInt(cols[1]) || 0;
+      if (data.players.find(p => p.name === name)) continue;
+      const eventStr = cols[2] || '';
+      let event = 'both';
+      if (eventStr.includes('仅个人')) event = 'individual';
+      else if (eventStr.includes('仅3V3') || eventStr.includes('仅3v3')) event = 'team';
+      data.players.push({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2,6) + i,
+        name, power, event,
+        contact: (cols[4]||'').trim(),
+        note: (cols[5]||'').trim(),
+        group: null, teamId: null,
+        registeredAt: new Date().toISOString()
+      });
+      imported++;
+    }
+    saveData();
+    refreshAll();
+    toast(`✅ 导入 ${imported} 人`);
+  };
+  reader.readAsText(file, 'UTF-8');
+  e.target.value = '';
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (const ch of line) {
+    if (ch === '"') { inQuotes = !inQuotes; }
+    else if (ch === ',' && !inQuotes) { result.push(current); current = ''; }
+    else { current += ch; }
+  }
+  result.push(current);
+  return result;
+}
+
+function clearAllData() {
+  if (!confirm('⚠️ 确定清空所有数据吗？此操作不可恢复！\n\n建议先导出报名表备份。')) return;
+  if (!confirm('再次确认：清空所有选手、赛程、队伍数据？')) return;
+  data = { players: [], individualMatches: { high: { groups: [], knockout: [] }, low: { groups: [], knockout: [] } }, teamMatches: { groups: [], knockout: [] }, teams: [] };
+  saveData();
+  refreshAll();
+  toast('已清空所有数据');
+}
+
+function loadDemoData() {
+  if (data.players.length > 0) {
+    if (!confirm('加载演示数据将覆盖现有数据，确定继续吗？')) return;
+  }
+  const demoPlayers = [
+    { name: '剑啸九州', power: 98500 },
+    { name: '月下独酌', power: 97200 },
+    { name: '风清扬', power: 96500 },
+    { name: '独孤求败', power: 95800 },
+    { name: '花间一壶酒', power: 94100 },
+    { name: '落叶归根', power: 93500 },
+    { name: '白云深处', power: 92100 },
+    { name: '天涯倦客', power: 91500 },
+    { name: '清风明月', power: 90200 },
+    { name: '一剑封喉', power: 88800 },
+    { name: '醉卧沙场', power: 87500 },
+    { name: '江南烟雨', power: 86200 },
+    { name: '北风卷地', power: 84900 },
+    { name: '细雨骑驴', power: 83500 },
+    { name: '大漠孤烟', power: 82000 },
+    { name: '长河落日', power: 80800 },
+    { name: '小桥流水', power: 79200 },
+    { name: '古道西风', power: 77800 },
+    { name: '断桥残雪', power: 76200 },
+    { name: '柳岸花明', power: 74800 },
+    { name: '春风得意', power: 73200 },
+    { name: '秋水长天', power: 71800 },
+    { name: '雪山飞狐', power: 70200 },
+    { name: '踏雪无痕', power: 68500 },
+  ];
+
+  data.players = demoPlayers.map((p, i) => ({
+    id: 'demo_' + i,
+    name: p.name,
+    power: p.power,
+    event: 'both',
+    contact: '',
+    note: '',
+    group: null,
+    teamId: null,
+    registeredAt: new Date().toISOString()
+  }));
+
+  // Auto assign groups
+  const sorted = [...data.players].sort((a,b) => b.power - a.power);
+  const mid = Math.floor(sorted.length / 2);
+  sorted.forEach((p, i) => { p.group = i < mid ? 'high' : 'low'; });
+
+  // Generate individual schedules
+  const allHigh = data.players.filter(p => p.group === 'high');
+  const allLow = data.players.filter(p => p.group === 'low');
+  data.individualMatches.high = generateGroupStage(allHigh);
+  data.individualMatches.low = generateGroupStage(allLow);
+
+  // Auto assign teams (3v3)
+  const highPool = data.players.filter(p => p.group === 'high');
+  const lowPool = data.players.filter(p => p.group === 'low');
+  const shuffledHigh = [...highPool].sort(() => Math.random() - 0.5);
+  const shuffledLow = [...lowPool].sort(() => Math.random() - 0.5);
+  const numTeams = Math.min(shuffledHigh.length, Math.floor(shuffledLow.length / 2));
+  data.teams = [];
+  for (let i = 0; i < numTeams; i++) {
+    const teamId = 'demo_t_' + i;
+    shuffledHigh[i].teamId = teamId;
+    shuffledLow[i*2].teamId = teamId;
+    shuffledLow[i*2+1].teamId = teamId;
+    data.teams.push({ id: teamId, name: `队伍${i+1}`, members: [shuffledHigh[i].id, shuffledLow[i*2].id, shuffledLow[i*2+1].id] });
+  }
+  generateTeamSchedule();
+
+  // Simulate some group stage results
+  [data.individualMatches.high, data.individualMatches.low].forEach(matches => {
+    matches.groups.forEach(g => {
+      g.matches.forEach(m => {
+        const scores = [[2,0],[2,1],[1,2],[2,0],[2,1],[0,2]];
+        const s = scores[Math.floor(Math.random() * scores.length)];
+        m.score1 = s[0]; m.score2 = s[1];
+        autoDetermineWinner(m, m.bo);
+      });
+    });
+    autoAdvanceKnockout(matches === data.individualMatches.high ? 'high' : 'low');
+  });
+
+  saveData();
+  refreshAll();
+  toast('✅ 演示数据已加载！共24名选手，可切换Tab查看完整赛程和晋级图');
+}
+
+// ==================== PLAYER MANAGEMENT ====================
+function refreshPlayers() {
+  const stats = document.getElementById('playerStats');
+  const highCount = data.players.filter(p => p.group === 'high').length;
+  const lowCount = data.players.filter(p => p.group === 'low').length;
+  const unassigned = data.players.filter(p => !p.group).length;
+  const indivCount = data.players.filter(p => p.event !== 'team').length;
+  const teamCount = data.players.filter(p => p.event !== 'individual').length;
+
+  stats.innerHTML = `
+    <div class="stat-card"><div class="num">${data.players.length}</div><div class="lbl">总报名人数</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--high)">${highCount}</div><div class="lbl">高手组</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--low)">${lowCount}</div><div class="lbl">低手组</div></div>
+    <div class="stat-card"><div class="num">${unassigned}</div><div class="lbl">待分组</div></div>
+    <div class="stat-card"><div class="num">${indivCount}</div><div class="lbl">个人赛选手</div></div>
+    <div class="stat-card"><div class="num">${teamCount}</div><div class="lbl">可参与3V3</div></div>
+  `;
+
+  const table = document.getElementById('playerTable');
+  if (data.players.length === 0) {
+    table.innerHTML = '<div class="empty-state"><div class="icon">👥</div>暂无选手，请先报名</div>';
+    return;
+  }
+
+  const sorted = [...data.players].sort((a,b) => b.power - a.power);
+  table.innerHTML = `<table>
+    <thead><tr><th>#</th><th>游戏ID</th><th>功力</th><th>排名</th><th>分组</th><th>参赛项目</th><th>3V3队伍</th><th>操作</th></tr></thead>
+    <tbody>${sorted.map((p,i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td><b>${esc(p.name)}</b></td>
+        <td>${p.power}</td>
+        <td>#${i+1}/${sorted.length}</td>
+        <td>${groupTag(p.group)}</td>
+        <td>${eventLabel(p.event)}</td>
+        <td>${teamNameTag(p.teamId)}</td>
+        <td>
+          <button class="btn btn-outline btn-xs" onclick="togglePlayerGroup('${p.id}')">切换分组</button>
+          <button class="btn btn-red btn-xs" onclick="removePlayer('${p.id}')">删除</button>
+        </td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+
+function togglePlayerGroup(id) {
+  const p = data.players.find(x => x.id === id);
+  if (!p) return;
+  if (!p.group || p.group === 'low') p.group = 'high';
+  else p.group = 'low';
+  saveData();
+  refreshPlayers();
+  toast(`${p.name} → ${p.group === 'high' ? '高手组' : '低手组'}`);
+}
+
+function teamNameTag(teamId) {
+  if (!teamId) return '<span class="tag tag-neut">未组队</span>';
+  const t = data.teams.find(x => x.id === teamId);
+  return t ? `<span class="tag tag-team">${esc(t.name)}</span>` : '<span class="tag tag-neut">-</span>';
+}
+
+function autoAssignGroups() {
+  if (data.players.length < 2) { toast('至少需要2名选手'); return; }
+  const sorted = [...data.players].sort((a,b) => b.power - a.power); // descending
+  const mid = Math.floor(sorted.length / 2);
+  sorted.forEach((p, i) => { p.group = i < mid ? 'high' : 'low'; });
+  saveData();
+  refreshAll();
+  toast(`✅ 已分配：高手组 ${mid} 人，低手组 ${sorted.length - mid} 人`);
+}
+
+// ==================== INDIVIDUAL SCHEDULE GENERATION ====================
+function generateIndividualSchedule() {
+  const allHigh = data.players.filter(p => p.group === 'high' && p.event !== 'team');
+  const allLow = data.players.filter(p => p.group === 'low' && p.event !== 'team');
+
+  if (allHigh.length < 3) { toast('高手组个人赛至少需要3人'); return; }
+  if (allLow.length < 3) { toast('低手组个人赛至少需要3人'); return; }
+
+  data.individualMatches.high = generateGroupStage(allHigh);
+  data.individualMatches.low = generateGroupStage(allLow);
+  saveData();
+  refreshAll();
+  toast('✅ 个人赛赛程已生成！');
+}
+
+function generateGroupStage(players) {
+  // Divide into groups of ~3
+  const shuffled = [...players].sort(() => Math.random() - 0.5);
+  const groupSize = 3;
+  const numGroups = Math.max(2, Math.ceil(shuffled.length / groupSize));
+  const groups = [];
+  for (let i = 0; i < numGroups; i++) {
+    groups.push({ name: String.fromCharCode(65 + i), players: [], matches: [] });
+  }
+  shuffled.forEach((p, i) => {
+    groups[i % numGroups].players.push(p.id);
+  });
+
+  // Generate round-robin matches within each group (BO3)
+  groups.forEach(g => {
+    const ids = g.players;
+    g.matches = [];
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        g.matches.push({
+          id: 'm_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+          player1: ids[i], player2: ids[j],
+          score1: null, score2: null, winner: null,
+          bo: 3, stage: 'group'
+        });
+      }
+    }
+  });
+
+  // Pre-generate knockout slots
+  const knockout = [
+    { id: 'ko_sf1', round: 'semifinal', bo: 5, player1: null, player2: null, score1: null, score2: null, winner: null, label: 'A组第1 vs D组第1' },
+    { id: 'ko_sf2', round: 'semifinal', bo: 5, player1: null, player2: null, score1: null, score2: null, winner: null, label: 'B组第1 vs C组第1' },
+    { id: 'ko_3rd', round: 'thirdPlace', bo: 5, player1: null, player2: null, score1: null, score2: null, winner: null, label: '半决赛败者对决' },
+    { id: 'ko_final', round: 'final', bo: 7, player1: null, player2: null, score1: null, score2: null, winner: null, label: '半决赛胜者对决' },
+  ];
+
+  return { groups, knockout };
+}
+
+// ==================== TEAM MANAGEMENT ====================
+function autoAssignTeams() {
+  const highPool = data.players.filter(p => p.group === 'high' && p.event !== 'individual' && !p.teamId);
+  const lowPool = data.players.filter(p => p.group === 'low' && p.event !== 'individual' && !p.teamId);
+
+  if (highPool.length === 0) { toast('没有可用的高手（需已分组且报名3V3）'); return; }
+  if (lowPool.length < 2) { toast('低手不足，至少需要2名低手'); return; }
+
+  // Shuffle and assign
+  const shuffledHigh = [...highPool].sort(() => Math.random() - 0.5);
+  const shuffledLow = [...lowPool].sort(() => Math.random() - 0.5);
+
+  const numTeams = Math.min(shuffledHigh.length, Math.floor(shuffledLow.length / 2));
+  data.teams = [];
+  for (let i = 0; i < numTeams; i++) {
+    const teamId = 't_' + Date.now().toString(36) + i;
+    const high = shuffledHigh[i];
+    const low1 = shuffledLow[i * 2];
+    const low2 = shuffledLow[i * 2 + 1];
+    high.teamId = teamId;
+    low1.teamId = teamId;
+    low2.teamId = teamId;
+    data.teams.push({
+      id: teamId,
+      name: `队伍${i+1}`,
+      members: [high.id, low1.id, low2.id]
+    });
+  }
+
+  // Generate 3v3 schedule
+  generateTeamSchedule();
+  saveData();
+  refreshAll();
+  toast(`✅ 已生成 ${numTeams} 支队伍`);
+}
+
+function generateTeamSchedule() {
+  if (data.teams.length < 3) { toast('至少需要3支队伍才能生成赛程'); return; }
+  const teams = [...data.teams];
+  const numGroups = Math.max(2, Math.ceil(teams.length / 3));
+  const groups = [];
+  const shuffled = teams.sort(() => Math.random() - 0.5);
+  for (let i = 0; i < numGroups; i++) {
+    groups.push({ name: String.fromCharCode(65 + i), teamIds: [], matches: [] });
+  }
+  shuffled.forEach((t, i) => {
+    groups[i % numGroups].teamIds.push(t.id);
+  });
+  groups.forEach(g => {
+    const ids = g.teamIds;
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        g.matches.push({
+          id: 'tm_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+          team1: ids[i], team2: ids[j],
+          score1: null, score2: null, winner: null,
+          bo: 3, stage: 'group'
+        });
+      }
+    }
+  });
+  const knockout = [
+    { id: 'tko_sf1', round: 'semifinal', bo: 5, team1: null, team2: null, score1: null, score2: null, winner: null, label: 'A组第1 vs B组第2' },
+    { id: 'tko_sf2', round: 'semifinal', bo: 5, team1: null, team2: null, score1: null, score2: null, winner: null, label: 'B组第1 vs A组第2' },
+    { id: 'tko_3rd', round: 'thirdPlace', bo: 5, team1: null, team2: null, score1: null, score2: null, winner: null, label: '半决赛败者对决' },
+    { id: 'tko_final', round: 'final', bo: 7, team1: null, team2: null, score1: null, score2: null, winner: null, label: '半决赛胜者对决' },
+  ];
+  data.teamMatches = { groups, knockout };
+}
+
+function refreshTeams() {
+  const list = document.getElementById('teamList');
+  if (data.teams.length === 0) {
+    list.innerHTML = '<div class="card"><div class="empty-state"><div class="icon">🤝</div>暂无队伍，请先自动组队或手动创建</div></div>';
+  } else {
+    list.innerHTML = data.teams.map(t => {
+      const members = t.members.map(mid => data.players.find(p => p.id === mid)).filter(Boolean);
+      const high = members.find(m => m.group === 'high');
+      const lows = members.filter(m => m.group === 'low');
+      return `<div class="card">
+        <h2>🏴 ${esc(t.name)} <span class="tag tag-team">3V3</span></h2>
+        <div class="team-display">
+          <span class="team-name">高手：</span>
+          ${high ? `<span class="member member-high">${esc(high.name)} (${high.power})</span>` : '<span class="tag tag-neut">待定</span>'}
+        </div>
+        <div class="team-display">
+          <span class="team-name">低手：</span>
+          ${lows.map(l => `<span class="member member-low">${esc(l.name)} (${l.power})</span>`).join(' 、 ')}
+        </div>
+        <button class="btn btn-red btn-sm" style="margin-top:8px" onclick="disbandTeam('${t.id}')">解散队伍</button>
+      </div>`;
+    }).join('');
+  }
+
+  // Team schedule
+  const tsDiv = document.getElementById('teamSchedule');
+  if (!data.teamMatches.groups || data.teamMatches.groups.length === 0) {
+    tsDiv.innerHTML = '<div class="empty-state"><div class="icon">📅</div>暂无赛程，请先生成3V3赛程</div>';
+    return;
+  }
+  tsDiv.innerHTML = renderTeamSchedule();
+}
+
+function disbandTeam(id) {
+  if (!confirm('确定解散该队伍吗？')) return;
+  data.players.forEach(p => { if (p.teamId === id) p.teamId = null; });
+  data.teams = data.teams.filter(t => t.id !== id);
+  saveData();
+  refreshAll();
+  toast('队伍已解散');
+}
+
+function manualTeamForm() {
+  const highPlayers = data.players.filter(p => p.group === 'high' && p.event !== 'individual' && !p.teamId);
+  const lowPlayers = data.players.filter(p => p.group === 'low' && p.event !== 'individual' && !p.teamId);
+  if (highPlayers.length === 0 || lowPlayers.length < 2) {
+    toast('高手或低手人数不足，无法手动组队');
+    return;
+  }
+  // Build a simple modal
+  const highOpts = highPlayers.map(p => `<option value="${p.id}">${esc(p.name)} (${p.power})</option>`).join('');
+  const lowOpts = lowPlayers.map(p => `<option value="${p.id}">${esc(p.name)} (${p.power})</option>`).join('');
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `<div class="modal">
+    <button class="close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+    <h2>✏️ 手动创建3V3队伍</h2>
+    <div class="form-group"><label>队伍名称</label><input id="manualTeamName" value="队伍${data.teams.length+1}"></div>
+    <div class="form-group"><label>高手 (1人)</label><select id="manualHigh">${highOpts}</select></div>
+    <div class="form-group"><label>低手 (2人)</label><select id="manualLow1">${lowOpts}</select></div>
+    <div class="form-group"><label>低手2</label><select id="manualLow2">${lowOpts}</select></div>
+    <button class="btn btn-gold" id="manualTeamBtn">✅ 创建队伍</button>
+  </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('manualTeamBtn').onclick = function() {
+    const name = document.getElementById('manualTeamName').value.trim();
+    const hId = document.getElementById('manualHigh').value;
+    const l1Id = document.getElementById('manualLow1').value;
+    const l2Id = document.getElementById('manualLow2').value;
+    if (!name) { toast('请输入队伍名'); return; }
+    if (l1Id === l2Id) { toast('低手不能重复选择'); return; }
+    const teamId = 't_' + Date.now().toString(36);
+    data.teams.push({ id: teamId, name, members: [hId, l1Id, l2Id] });
+    [hId, l1Id, l2Id].forEach(pid => {
+      const p = data.players.find(x => x.id === pid);
+      if (p) p.teamId = teamId;
+    });
+    saveData();
+    refreshAll();
+    overlay.remove();
+    toast(`✅ ${name} 创建成功`);
+  };
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+}
+
+// ==================== SCHEDULE DISPLAY ====================
+let currentScheduleView = 'high';
+
+function showSchedule(view) {
+  currentScheduleView = view;
+  ['high','low','team'].forEach(v => {
+    const btn = document.getElementById('schedBtn' + v.charAt(0).toUpperCase() + v.slice(1));
+    if (btn) btn.style.borderColor = v === view ? 'var(--gold)' : '';
+    if (btn) btn.style.color = v === view ? 'var(--gold)' : '';
+  });
+  refreshSchedule();
+}
+
+function refreshSchedule() {
+  const container = document.getElementById('scheduleContent');
+  if (currentScheduleView === 'team') {
+    container.innerHTML = renderTeamSchedule();
+    return;
+  }
+  const matches = currentScheduleView === 'high' ? data.individualMatches.high : data.individualMatches.low;
+  const label = currentScheduleView === 'high' ? '高手组' : '低手组';
+  if (!matches.groups || matches.groups.length === 0) {
+    container.innerHTML = `<div class="card"><div class="empty-state"><div class="icon">📅</div>暂无${label}赛程，请先在选手管理中生成赛程</div></div>`;
+    return;
+  }
+  container.innerHTML = renderIndividualSchedule(matches, label);
+}
+
+function renderIndividualSchedule(matches, label) {
+  let html = `<div class="card"><h2>📅 个人赛·${label} — 小组赛 (BO3)</h2>
+    <div class="info-tip">组内单循环，胜场积3分，负场积0分，记小分。每组积分第1名晋级淘汰赛。</div>
+    <div class="group-grid">`;
+
+  matches.groups.forEach(g => {
+    const standings = calcGroupStandings(g, 'individual');
+    html += `<div class="group-card">
+      <div class="group-title">${g.name}组</div>
+      <table><thead><tr><th>选手</th><th>功力</th><th>胜</th><th>负</th><th>积分</th></tr></thead><tbody>`;
+    standings.forEach(s => {
+      html += `<tr class="${s.rank === 1 ? 'qualified' : ''}">
+        <td>${s.rank === 1 ? '' : ''}${esc(s.name)}</td>
+        <td>${s.power}</td><td>${s.wins}</td><td>${s.losses}</td><td><b>${s.points}</b></td></tr>`;
+    });
+    html += `</tbody></table>
+      <div style="padding:8px 14px;font-size:0.8em;color:var(--text2)">对阵：</div>`;
+    g.matches.forEach(m => {
+      const p1 = data.players.find(x => x.id === m.player1);
+      const p2 = data.players.find(x => x.id === m.player2);
+      html += renderMatchResultRow(m, p1, p2, 'individual');
+    });
+    html += `</div>`;
+  });
+
+  html += `</div></div>`;
+
+  // Knockout
+  html += `<div class="card"><h2>🏆 淘汰赛</h2>
+    <div class="info-tip">半决赛/季军赛为 BO5，决赛为 BO7</div>`;
+  matches.knockout.forEach(ko => {
+    html += renderKoMatchRow(ko, 'individual');
+  });
+  html += `</div>`;
+  return html;
+}
+
+function renderTeamSchedule() {
+  if (!data.teamMatches.groups || data.teamMatches.groups.length === 0) {
+    return '<div class="card"><div class="empty-state"><div class="icon">📅</div>暂无3V3赛程</div></div>';
+  }
+
+  let html = `<div class="card"><h2>📅 3V3多人赛 — 小组赛 (BO3)</h2>
+    <div class="info-tip">组内单循环，胜场积3分，负场积0分。每组积分前2名晋级淘汰赛。</div>
+    <div class="group-grid">`;
+
+  data.teamMatches.groups.forEach(g => {
+    const standings = calcTeamGroupStandings(g);
+    html += `<div class="group-card">
+      <div class="group-title">${g.name}组</div>
+      <table><thead><tr><th>队伍</th><th>胜</th><th>负</th><th>积分</th></tr></thead><tbody>`;
+    standings.forEach(s => {
+      html += `<tr class="${s.rank <= 2 ? 'qualified' : ''}">
+        <td>${s.rank <= 2 ? '' : ''}${esc(s.name)}</td>
+        <td>${s.wins}</td><td>${s.losses}</td><td><b>${s.points}</b></td></tr>`;
+    });
+    html += `</tbody></table>
+      <div style="padding:8px 14px;font-size:0.8em;color:var(--text2)">对阵：</div>`;
+    g.matches.forEach(m => {
+      const t1 = data.teams.find(x => x.id === m.team1);
+      const t2 = data.teams.find(x => x.id === m.team2);
+      html += renderTeamMatchResultRow(m, t1, t2);
+    });
+    html += `</div>`;
+  });
+
+  html += `</div></div>`;
+
+  html += `<div class="card"><h2>🏆 淘汰赛</h2>
+    <div class="info-tip">半决赛/季军赛为 BO5，决赛为 BO7</div>`;
+  data.teamMatches.knockout.forEach(ko => {
+    html += renderTeamKoMatchRow(ko);
+  });
+  html += `</div>`;
+  return html;
+}
+
+function calcGroupStandings(group, type) {
+  const playerIds = group.players;
+  const standings = {};
+  playerIds.forEach(id => { standings[id] = { id, wins: 0, losses: 0, points: 0 }; });
+  group.matches.forEach(m => {
+    if (m.winner === null) return;
+    const winner = m.winner;
+    const loser = m.player1 === winner ? m.player2 : m.player1;
+    if (standings[winner]) { standings[winner].wins++; standings[winner].points += 3; }
+    if (standings[loser]) { standings[loser].losses++; }
+  });
+  const arr = playerIds.map(id => {
+    const p = data.players.find(x => x.id === id);
+    return { ...standings[id], name: p ? p.name : '?', power: p ? p.power : 0 };
+  }).sort((a,b) => b.points - a.points || b.wins - a.wins || a.losses - b.losses);
+  arr.forEach((s, i) => { s.rank = i + 1; });
+  return arr;
+}
+
+function calcTeamGroupStandings(group) {
+  const teamIds = group.teamIds;
+  const standings = {};
+  teamIds.forEach(id => { standings[id] = { id, wins: 0, losses: 0, points: 0 }; });
+  group.matches.forEach(m => {
+    if (m.winner === null) return;
+    if (standings[m.winner]) { standings[m.winner].wins++; standings[m.winner].points += 3; }
+    const loser = m.team1 === m.winner ? m.team2 : m.team1;
+    if (standings[loser]) { standings[loser].losses++; }
+  });
+  const arr = teamIds.map(id => {
+    const t = data.teams.find(x => x.id === id);
+    return { ...standings[id], name: t ? t.name : '?' };
+  }).sort((a,b) => b.points - a.points || b.wins - a.wins);
+  arr.forEach((s, i) => { s.rank = i + 1; });
+  return arr;
+}
+
+function renderMatchResultRow(m, p1, p2, type) {
+  if (!p1 || !p2) return '';
+  const winnerMark = m.winner ? ' ✅' : '';
+  return `<div class="match-result-row">
+    <span>${esc(p1.name)}</span>
+    <input type="number" min="0" max="3" placeholder="-" value="${m.score1 !== null ? m.score1 : ''}" onchange="updateMatchScore('${type}','${m.id}','score1',this.value)" style="width:45px">
+    <span class="vs">:</span>
+    <input type="number" min="0" max="3" placeholder="-" value="${m.score2 !== null ? m.score2 : ''}" onchange="updateMatchScore('${type}','${m.id}','score2',this.value)" style="width:45px">
+    <span>${esc(p2.name)}</span>
+    <span style="font-size:0.7em;color:var(--text2)">(BO${m.bo})</span>
+    ${m.winner ? `<span style="color:var(--gold);font-size:0.8em">→ ${esc(data.players.find(x=>x.id===m.winner)?.name||'?')} 胜</span>` : '<span style="color:var(--text2);font-size:0.7em">待定</span>'}
+    <button class="btn btn-outline btn-xs" onclick="resetMatch('${type}','${m.id}')">重置</button>
+  </div>`;
+}
+
+function renderKoMatchRow(ko, type) {
+  const p1 = data.players.find(x => x.id === ko.player1);
+  const p2 = data.players.find(x => x.id === ko.player2);
+  const roundLabel = ko.round === 'semifinal' ? '半决赛' : ko.round === 'thirdPlace' ? '季军赛' : '🏆 决赛';
+  const p1Name = p1 ? esc(p1.name) : (ko.label ? `<i style="color:var(--text2)">${ko.label.split(' vs ')[0]||'待定'}</i>` : '<i style="color:var(--text2)">待定</i>');
+  const p2Name = p2 ? esc(p2.name) : (ko.label ? `<i style="color:var(--text2)">${ko.label.split(' vs ')[1]||'待定'}</i>` : '<i style="color:var(--text2)">待定</i>');
+  return `<div class="match-result-row" style="border-left:3px solid var(--gold);">
+    <b style="color:var(--gold);min-width:50px">${roundLabel}</b>
+    <span>${p1Name}</span>
+    <input type="number" min="0" max="${ko.bo}" placeholder="-" value="${ko.score1 !== null ? ko.score1 : ''}" onchange="updateKoScore('${type}','${ko.id}','score1',this.value)" style="width:45px">
+    <span class="vs">:</span>
+    <input type="number" min="0" max="${ko.bo}" placeholder="-" value="${ko.score2 !== null ? ko.score2 : ''}" onchange="updateKoScore('${type}','${ko.id}','score2',this.value)" style="width:45px">
+    <span>${p2Name}</span>
+    <span style="font-size:0.7em;color:var(--text2)">(BO${ko.bo})</span>
+    ${ko.winner ? `<span style="color:var(--gold);font-size:0.8em">→ ${esc(data.players.find(x=>x.id===ko.winner)?.name||'?')} 胜</span>` : '<span style="color:var(--text2);font-size:0.7em">待定</span>'}
+    <button class="btn btn-outline btn-xs" onclick="resetKoMatch('${type}','${ko.id}')">重置</button>
+  </div>`;
+}
+
+function renderTeamMatchResultRow(m, t1, t2) {
+  if (!t1 || !t2) return '';
+  return `<div class="match-result-row">
+    <span><b>${esc(t1.name)}</b></span>
+    <input type="number" min="0" max="3" placeholder="-" value="${m.score1 !== null ? m.score1 : ''}" onchange="updateTeamMatchScore('${m.id}','score1',this.value)" style="width:45px">
+    <span class="vs">:</span>
+    <input type="number" min="0" max="3" placeholder="-" value="${m.score2 !== null ? m.score2 : ''}" onchange="updateTeamMatchScore('${m.id}','score2',this.value)" style="width:45px">
+    <span><b>${esc(t2.name)}</b></span>
+    <span style="font-size:0.7em;color:var(--text2)">(BO${m.bo})</span>
+    ${m.winner ? `<span style="color:var(--gold);font-size:0.8em">→ ${esc(data.teams.find(x=>x.id===m.winner)?.name||'?')} 胜</span>` : '<span style="color:var(--text2);font-size:0.7em">待定</span>'}
+    <button class="btn btn-outline btn-xs" onclick="resetTeamMatch('${m.id}')">重置</button>
+  </div>`;
+}
+
+function renderTeamKoMatchRow(ko) {
+  const t1 = data.teams.find(x => x.id === ko.team1);
+  const t2 = data.teams.find(x => x.id === ko.team2);
+  const roundLabel = ko.round === 'semifinal' ? '半决赛' : ko.round === 'thirdPlace' ? '季军赛' : '🏆 决赛';
+  const t1Name = t1 ? esc(t1.name) : (ko.label ? `<i style="color:var(--text2)">${ko.label.split(' vs ')[0]||'待定'}</i>` : '<i style="color:var(--text2)">待定</i>');
+  const t2Name = t2 ? esc(t2.name) : (ko.label ? `<i style="color:var(--text2)">${ko.label.split(' vs ')[1]||'待定'}</i>` : '<i style="color:var(--text2)">待定</i>');
+  return `<div class="match-result-row" style="border-left:3px solid var(--team);">
+    <b style="color:var(--gold);min-width:50px">${roundLabel}</b>
+    <span>${t1Name}</span>
+    <input type="number" min="0" max="${ko.bo}" placeholder="-" value="${ko.score1 !== null ? ko.score1 : ''}" onchange="updateTeamKoScore('${ko.id}','score1',this.value)" style="width:45px">
+    <span class="vs">:</span>
+    <input type="number" min="0" max="${ko.bo}" placeholder="-" value="${ko.score2 !== null ? ko.score2 : ''}" onchange="updateTeamKoScore('${ko.id}','score2',this.value)" style="width:45px">
+    <span>${t2Name}</span>
+    <span style="font-size:0.7em;color:var(--text2)">(BO${ko.bo})</span>
+    ${ko.winner ? `<span style="color:var(--gold);font-size:0.8em">→ ${esc(data.teams.find(x=>x.id===ko.winner)?.name||'?')} 胜</span>` : '<span style="color:var(--text2);font-size:0.7em">待定</span>'}
+    <button class="btn btn-outline btn-xs" onclick="resetTeamKoMatch('${ko.id}')">重置</button>
+  </div>`;
+}
+
+// ==================== MATCH SCORE UPDATES ====================
+function updateMatchScore(type, matchId, field, value) {
+  const matches = type === 'high' ? data.individualMatches.high : data.individualMatches.low;
+  let found = null;
+  matches.groups.forEach(g => {
+    const m = g.matches.find(x => x.id === matchId);
+    if (m) found = m;
+  });
+  if (!found) return;
+  const val = parseInt(value);
+  found[field] = isNaN(val) ? null : val;
+  // Auto-determine winner based on BO
+  autoDetermineWinner(found, found.bo);
+  autoAdvanceKnockout(type);
+  saveData();
+  refreshSchedule();
+  refreshBracket();
+}
+
+function updateKoScore(type, koId, field, value) {
+  const matches = type === 'high' ? data.individualMatches.high : data.individualMatches.low;
+  const ko = matches.knockout.find(x => x.id === koId);
+  if (!ko) return;
+  const val = parseInt(value);
+  ko[field] = isNaN(val) ? null : val;
+  autoDetermineWinner(ko, ko.bo);
+  autoAdvanceKnockout(type);
+  saveData();
+  refreshSchedule();
+  refreshBracket();
+}
+
+function updateTeamMatchScore(matchId, field, value) {
+  let found = null;
+  data.teamMatches.groups.forEach(g => {
+    const m = g.matches.find(x => x.id === matchId);
+    if (m) found = m;
+  });
+  if (!found) return;
+  const val = parseInt(value);
+  found[field] = isNaN(val) ? null : val;
+  autoDetermineTeamWinner(found, found.bo);
+  autoAdvanceTeamKnockout();
+  saveData();
+  refreshSchedule();
+  refreshBracket();
+  refreshTeams();
+}
+
+function updateTeamKoScore(koId, field, value) {
+  const ko = data.teamMatches.knockout.find(x => x.id === koId);
+  if (!ko) return;
+  const val = parseInt(value);
+  ko[field] = isNaN(val) ? null : val;
+  autoDetermineTeamWinner(ko, ko.bo);
+  autoAdvanceTeamKnockout();
+  saveData();
+  refreshSchedule();
+  refreshBracket();
+}
+
+function autoDetermineWinner(m, bo) {
+  if (m.score1 === null || m.score2 === null) { m.winner = null; return; }
+  const needed = Math.ceil(bo / 2);
+  if (m.score1 >= needed && m.score1 > m.score2) m.winner = m.player1;
+  else if (m.score2 >= needed && m.score2 > m.score1) m.winner = m.player2;
+  else m.winner = null;
+}
+
+function autoDetermineTeamWinner(m, bo) {
+  if (m.score1 === null || m.score2 === null) { m.winner = null; return; }
+  const needed = Math.ceil(bo / 2);
+  if (m.score1 >= needed && m.score1 > m.score2) m.winner = m.team1;
+  else if (m.score2 >= needed && m.score2 > m.score1) m.winner = m.team2;
+  else m.winner = null;
+}
+
+function resetMatch(type, matchId) {
+  const matches = type === 'high' ? data.individualMatches.high : data.individualMatches.low;
+  matches.groups.forEach(g => {
+    const m = g.matches.find(x => x.id === matchId);
+    if (m) { m.score1 = null; m.score2 = null; m.winner = null; }
+  });
+  matches.knockout.forEach(ko => { ko.player1 = null; ko.player2 = null; ko.score1 = null; ko.score2 = null; ko.winner = null; });
+  saveData();
+  refreshAll();
+}
+
+function resetKoMatch(type, koId) {
+  const matches = type === 'high' ? data.individualMatches.high : data.individualMatches.low;
+  const ko = matches.knockout.find(x => x.id === koId);
+  if (ko) { ko.score1 = null; ko.score2 = null; ko.winner = null; }
+  // Reset downstream
+  const idx = matches.knockout.findIndex(x => x.id === koId);
+  if (idx >= 0) {
+    for (let i = idx + 1; i < matches.knockout.length; i++) {
+      if (matches.knockout[i].round !== 'thirdPlace') {
+        matches.knockout[i].player1 = null;
+        matches.knockout[i].player2 = null;
+      }
+      matches.knockout[i].score1 = null;
+      matches.knockout[i].score2 = null;
+      matches.knockout[i].winner = null;
+    }
+  }
+  saveData();
+  refreshAll();
+}
+
+function resetTeamMatch(matchId) {
+  data.teamMatches.groups.forEach(g => {
+    const m = g.matches.find(x => x.id === matchId);
+    if (m) { m.score1 = null; m.score2 = null; m.winner = null; }
+  });
+  data.teamMatches.knockout.forEach(ko => { ko.team1 = null; ko.team2 = null; ko.score1 = null; ko.score2 = null; ko.winner = null; });
+  saveData();
+  refreshAll();
+}
+
+function resetTeamKoMatch(koId) {
+  const ko = data.teamMatches.knockout.find(x => x.id === koId);
+  if (ko) { ko.score1 = null; ko.score2 = null; ko.winner = null; }
+  const idx = data.teamMatches.knockout.findIndex(x => x.id === koId);
+  if (idx >= 0) {
+    for (let i = idx + 1; i < data.teamMatches.knockout.length; i++) {
+      if (data.teamMatches.knockout[i].round !== 'thirdPlace') {
+        data.teamMatches.knockout[i].team1 = null;
+        data.teamMatches.knockout[i].team2 = null;
+      }
+      data.teamMatches.knockout[i].score1 = null;
+      data.teamMatches.knockout[i].score2 = null;
+      data.teamMatches.knockout[i].winner = null;
+    }
+  }
+  saveData();
+  refreshAll();
+}
+
+function autoAdvanceKnockout(type) {
+  const matches = type === 'high' ? data.individualMatches.high : data.individualMatches.low;
+  if (!matches.groups || matches.groups.length === 0) return;
+
+  // Get group winners
+  const groupWinners = [];
+  matches.groups.forEach(g => {
+    const standings = calcGroupStandings(g, 'individual');
+    if (standings.length > 0 && standings[0].points >= 0) {
+      groupWinners.push({ group: g.name, playerId: standings[0].id });
+    }
+  });
+
+  // Need at least 4 group winners for knockout (A,B,C,D)
+  const gw = {};
+  groupWinners.forEach(w => { gw[w.group] = w.playerId; });
+
+  const sf1 = matches.knockout.find(k => k.round === 'semifinal' && k.label.includes('A组'));
+  const sf2 = matches.knockout.find(k => k.round === 'semifinal' && k.label.includes('B组'));
+  const third = matches.knockout.find(k => k.round === 'thirdPlace');
+  const final = matches.knockout.find(k => k.round === 'final');
+
+  if (sf1) { sf1.player1 = gw['A'] || null; sf1.player2 = gw['D'] || null; }
+  if (sf2) { sf2.player1 = gw['B'] || null; sf2.player2 = gw['C'] || null; }
+
+  // Advance winners to final, losers to 3rd place
+  if (sf1 && sf1.winner && sf2 && sf2.winner) {
+    if (final) { final.player1 = sf1.winner; final.player2 = sf2.winner; }
+    const sf1Loser = sf1.winner === sf1.player1 ? sf1.player2 : sf1.player1;
+    const sf2Loser = sf2.winner === sf2.player1 ? sf2.player2 : sf2.player1;
+    if (third) { third.player1 = sf1Loser; third.player2 = sf2Loser; }
+  }
+}
+
+function autoAdvanceTeamKnockout() {
+  if (!data.teamMatches.groups || data.teamMatches.groups.length === 0) return;
+
+  const groupTop2 = {}; // group name -> [1st, 2nd] teamIds
+  data.teamMatches.groups.forEach(g => {
+    const standings = calcTeamGroupStandings(g);
+    if (standings.length >= 2) {
+      groupTop2[g.name] = [standings[0].id, standings[1].id];
+    }
+  });
+
+  const sf1 = data.teamMatches.knockout.find(k => k.round === 'semifinal' && k.label.includes('A组第1'));
+  const sf2 = data.teamMatches.knockout.find(k => k.round === 'semifinal' && k.label.includes('B组第1'));
+  const third = data.teamMatches.knockout.find(k => k.round === 'thirdPlace');
+  const final = data.teamMatches.knockout.find(k => k.round === 'final');
+
+  if (sf1 && groupTop2['A'] && groupTop2['B']) {
+    sf1.team1 = groupTop2['A'][0];
+    sf1.team2 = groupTop2['B'][1];
+  }
+  if (sf2 && groupTop2['B'] && groupTop2['A']) {
+    sf2.team1 = groupTop2['B'][0];
+    sf2.team2 = groupTop2['A'][1];
+  }
+
+  if (sf1 && sf1.winner && sf2 && sf2.winner) {
+    if (final) { final.team1 = sf1.winner; final.team2 = sf2.winner; }
+    const sf1Loser = sf1.winner === sf1.team1 ? sf1.team2 : sf1.team1;
+    const sf2Loser = sf2.winner === sf2.team1 ? sf2.team2 : sf2.team1;
+    if (third) { third.team1 = sf1Loser; third.team2 = sf2Loser; }
+  }
+}
+
+// ==================== BRACKET DISPLAY ====================
+let currentBracketView = 'high';
+
+function showBracket(view) {
+  currentBracketView = view;
+  ['high','low','team'].forEach(v => {
+    const btn = document.getElementById('brackBtn' + v.charAt(0).toUpperCase() + v.slice(1));
+    if (btn) btn.style.borderColor = v === view ? 'var(--gold)' : '';
+    if (btn) btn.style.color = v === view ? 'var(--gold)' : '';
+  });
+  refreshBracket();
+}
+
+function refreshBracket() {
+  const container = document.getElementById('bracketContent');
+  if (currentBracketView === 'team') {
+    container.innerHTML = renderTeamBracket();
+    return;
+  }
+  const matches = currentBracketView === 'high' ? data.individualMatches.high : data.individualMatches.low;
+  const label = currentBracketView === 'high' ? '高手组' : '低手组';
+  if (!matches.groups || matches.groups.length === 0) {
+    container.innerHTML = `<div class="card"><div class="empty-state"><div class="icon">🏆</div>暂无${label}晋级图</div></div>`;
+    return;
+  }
+  container.innerHTML = renderBracket(matches, label, 'individual');
+}
+
+function renderBracket(matches, label, type) {
+  const sf1 = matches.knockout.find(k => k.round === 'semifinal' && k.label && k.label.includes('A组'));
+  const sf2 = matches.knockout.find(k => k.round === 'semifinal' && k.label && k.label.includes('B组'));
+  const third = matches.knockout.find(k => k.round === 'thirdPlace');
+  const final = matches.knockout.find(k => k.round === 'final');
+
+  // Build group summary
+  let groupSummary = '<div class="group-grid" style="margin-bottom:20px">';
+  matches.groups.forEach(g => {
+    const standings = calcGroupStandings(g, 'individual');
+    groupSummary += `<div class="group-card">
+      <div class="group-title">${g.name}组 ${standings[0] ? '→ 晋级：'+esc(standings[0].name) : ''}</div>
+      <table><thead><tr><th>选手</th><th>积分</th><th>胜/负</th></tr></thead><tbody>`;
+    standings.forEach(s => {
+      groupSummary += `<tr class="${s.rank===1?'qualified':''}"><td>${esc(s.name)}</td><td>${s.points}</td><td>${s.wins}/${s.losses}</td></tr>`;
+    });
+    groupSummary += `</tbody></table></div>`;
+  });
+  groupSummary += '</div>';
+
+  const pName = (playerId) => {
+    if (!playerId) return '<span style="color:var(--text2)">待定</span>';
+    const p = data.players.find(x => x.id === playerId);
+    return p ? esc(p.name) : '<span style="color:var(--text2)">?</span>';
+  };
+
+  const renderMatchBox = (m, roundLabel, bo) => {
+    const p1 = m ? m.player1 : null;
+    const p2 = m ? m.player2 : null;
+    const winner = m ? m.winner : null;
+    const s1 = (m && m.score1 !== null) ? m.score1 : '-';
+    const s2 = (m && m.score2 !== null) ? m.score2 : '-';
+    return `<div class="bracket-match${winner?' winner':''}">
+      <div class="match-bo">${roundLabel} (BO${bo})</div>
+      <div class="match-players">
+        <div${winner===p1?' class="winner-mark"':''}>${pName(p1)}</div>
+        <div style="font-size:0.7em;color:var(--text2)">${s1} : ${s2}</div>
+        <div${winner===p2?' class="winner-mark"':''}>${pName(p2)}</div>
+      </div>
+    </div>`;
+  };
+
+  const bo5 = 5, bo7 = 7;
+  let html = `<div class="card"><h2>🏆 个人赛·${label} — 晋级图</h2>`;
+  html += groupSummary;
+  html += `<div class="bracket-container"><div class="bracket-rounds">
+    <div class="bracket-column">
+      <div class="bracket-col-title">半决赛 (BO5)</div>
+      ${renderMatchBox(sf1, 'A组第1 vs D组第1', bo5)}
+      <div style="height:24px"></div>
+      ${renderMatchBox(sf2, 'B组第1 vs C组第1', bo5)}
+    </div>
+    <div class="bracket-connectors" style="justify-content:center">
+      <div class="bracket-connector" style="height:100px;align-items:center;justify-content:flex-end;padding-right:12px">
+        <span style="font-size:1.2em;color:var(--gold);opacity:0.5">──▶</span>
+      </div>
+      <div style="height:24px"></div>
+      <div class="bracket-connector" style="height:100px;align-items:center;justify-content:flex-end;padding-right:12px">
+        <span style="font-size:1.2em;color:var(--gold);opacity:0.5">──▶</span>
+      </div>
+    </div>
+    <div class="bracket-column" style="justify-content:center">
+      <div class="bracket-col-title">🏆 决赛 (BO7)</div>
+      ${renderMatchBox(final, '决赛', bo7)}
+    </div>
+    <div class="bracket-column" style="justify-content:center">
+      <div class="bracket-col-title">季军赛 (BO5)</div>
+      ${renderMatchBox(third, '季军赛', bo5)}
+      <div style="margin-top:12px;font-size:0.85em;color:var(--gold);text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px">
+        <div>🥇 <b>冠军</b>: ${final&&final.winner?pName(final.winner):'待定'}</div>
+        <div style="margin-top:4px">🥈 <b>亚军</b>: ${final&&final.winner?pName(final.winner===final.player1?final.player2:final.player1):'待定'}</div>
+        <div style="margin-top:4px">🥉 <b>季军</b>: ${third&&third.winner?pName(third.winner):'待定'}</div>
+      </div>
+    </div>
+  </div></div></div>`;
+  return html;
+}
+
+function renderTeamBracket() {
+  if (!data.teamMatches.groups || data.teamMatches.groups.length === 0) {
+    return '<div class="card"><div class="empty-state"><div class="icon">🏆</div>暂无3V3晋级图</div></div>';
+  }
+
+  const sf1 = data.teamMatches.knockout.find(k => k.round === 'semifinal' && k.label && k.label.includes('A组'));
+  const sf2 = data.teamMatches.knockout.find(k => k.round === 'semifinal' && k.label && k.label.includes('B组'));
+  const third = data.teamMatches.knockout.find(k => k.round === 'thirdPlace');
+  const final = data.teamMatches.knockout.find(k => k.round === 'final');
+
+  let groupSummary = '<div class="group-grid" style="margin-bottom:20px">';
+  data.teamMatches.groups.forEach(g => {
+    const standings = calcTeamGroupStandings(g);
+    groupSummary += `<div class="group-card">
+      <div class="group-title">${g.name}组 → 晋级：${standings[0]?esc(standings[0].name):'?'}、${standings[1]?esc(standings[1].name):'?'}</div>
+      <table><thead><tr><th>队伍</th><th>积分</th><th>胜/负</th></tr></thead><tbody>`;
+    standings.forEach(s => {
+      groupSummary += `<tr class="${s.rank<=2?'qualified':''}"><td>${esc(s.name)}</td><td>${s.points}</td><td>${s.wins}/${s.losses}</td></tr>`;
+    });
+    groupSummary += `</tbody></table></div>`;
+  });
+  groupSummary += '</div>';
+
+  const tName = (teamId) => {
+    if (!teamId) return '<span style="color:var(--text2)">待定</span>';
+    const t = data.teams.find(x => x.id === teamId);
+    return t ? esc(t.name) : '<span style="color:var(--text2)">?</span>';
+  };
+
+  const renderTeamBox = (m, roundLabel, bo) => {
+    const t1 = m ? m.team1 : null;
+    const t2 = m ? m.team2 : null;
+    const winner = m ? m.winner : null;
+    const s1 = (m && m.score1 !== null) ? m.score1 : '-';
+    const s2 = (m && m.score2 !== null) ? m.score2 : '-';
+    return `<div class="bracket-match${winner?' winner':''}">
+      <div class="match-bo">${roundLabel} (BO${bo})</div>
+      <div class="match-players">
+        <div${winner===t1?' class="winner-mark"':''}>${tName(t1)}</div>
+        <div style="font-size:0.7em;color:var(--text2)">${s1} : ${s2}</div>
+        <div${winner===t2?' class="winner-mark"':''}>${tName(t2)}</div>
+      </div>
+    </div>`;
+  };
+
+  const bo5 = 5, bo7 = 7;
+  let html = `<div class="card"><h2>🏆 3V3多人赛 — 晋级图</h2>`;
+  html += groupSummary;
+  html += `<div class="bracket-container"><div class="bracket-rounds">
+    <div class="bracket-column">
+      <div class="bracket-col-title">半决赛 (BO5)</div>
+      ${renderTeamBox(sf1, 'A组第1 vs B组第2', bo5)}
+      <div style="height:24px"></div>
+      ${renderTeamBox(sf2, 'B组第1 vs A组第2', bo5)}
+    </div>
+    <div class="bracket-connectors" style="justify-content:center">
+      <div class="bracket-connector" style="height:100px;align-items:center;justify-content:flex-end;padding-right:12px">
+        <span style="font-size:1.2em;color:var(--gold);opacity:0.5">──▶</span>
+      </div>
+      <div style="height:24px"></div>
+      <div class="bracket-connector" style="height:100px;align-items:center;justify-content:flex-end;padding-right:12px">
+        <span style="font-size:1.2em;color:var(--gold);opacity:0.5">──▶</span>
+      </div>
+    </div>
+    <div class="bracket-column" style="justify-content:center">
+      <div class="bracket-col-title">🏆 决赛 (BO7)</div>
+      ${renderTeamBox(final, '决赛', bo7)}
+    </div>
+    <div class="bracket-column" style="justify-content:center">
+      <div class="bracket-col-title">季军赛 (BO5)</div>
+      ${renderTeamBox(third, '季军赛', bo5)}
+      <div style="margin-top:12px;font-size:0.85em;color:var(--gold);text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px">
+        <div>🥇 <b>冠军</b>: ${final&&final.winner?tName(final.winner):'待定'}</div>
+        <div style="margin-top:4px">🥈 <b>亚军</b>: ${final&&final.winner?tName(final.winner===final.team1?final.team2:final.team1):'待定'}</div>
+        <div style="margin-top:4px">🥉 <b>季军</b>: ${third&&third.winner?tName(third.winner):'待定'}</div>
+      </div>
+    </div>
+  </div></div></div>`;
+  return html;
+}
+
+// ==================== INIT ====================
+function init() {
+  updateBadges();
+  refreshRegister();
+}
+
+init();
+</script>
+</body>
+</html>
